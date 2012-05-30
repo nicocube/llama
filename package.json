@@ -1,0 +1,23 @@
+{
+  "author": "Nicolas Lochet",
+  "name": "llama",
+  "description": "Small convention-oriented, filesystem JSON-based, CMS server",
+  "version": "0.0.0",
+  "homepage": "https://github.com/nicocube/llama",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/nicocube/llama.git"
+  },
+  "main": "index.js",
+  "dependencies": {
+	"knit": "*",
+	"wool": "*",
+	"underscore": "*"
+  },
+  "devDependencies": {},
+  "optionalDependencies": {},
+  "engines": {
+    "node": "*"
+  },
+  "bin" : { "llama" : "./bin/llama-script.js" }
+}
