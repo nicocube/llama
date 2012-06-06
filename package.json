@@ -12,7 +12,7 @@
   "dependencies": {
 	"knit": "*",
 	"wool": "*",
-	"underscore": "*"
+	"mu2": "*"
   },
   "devDependencies": {},
   "optionalDependencies": {},
