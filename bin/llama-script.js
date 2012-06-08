@@ -12,7 +12,7 @@
 
 require('knit').config(function (bind) {
 	bind('llama').to(require(__dirname + '/../lib/llama.js'))
-}).inject(function (fs, llama) {	
+}).inject(function (fs, llama, str_to_obj) {	
 	var 
 		default_options_location = __dirname + '/../config.json',
 		local_value_location = './config.json'
@@ -30,6 +30,24 @@ require('knit').config(function (bind) {
 				"  -p, --port PORT       the PORT number to run this llama with\n" +
 				"  -h, --help        display this help and exit\n" +
 				"  -v, --version     output version information and exit";
+
+
+	function loadConfig(file, noFault, noMessage) {
+		try {
+			var content = fs.readFileSync(file, 'utf8')
+			var update = str_to_obj(content)
+			for (u in update) {
+				if (typeof u === 'string') {
+					options[u] = update[u]
+				}
+			}
+		} catch(e) {
+			if (noFault) {
+				if (!noMessage) console.warn(e)
+			} else
+				throw e
+		}
+	}
 
 	loadConfig(default_options_location,true,true)
 
@@ -88,25 +106,5 @@ require('knit').config(function (bind) {
 		loadConfig(local_value_location,true,true)
 
 	llama(options)
-
-
-//*************
-
-	function loadConfig(file, noFault, noMessage) {
-		try {
-			var content = fs.readFileSync(file, 'utf8')
-			var update = JSON.parse(content)
-			for (u in update) {
-				if (typeof u === 'string') {
-					options[u] = update[u]
-				}
-			}
-		} catch(e) {
-			if (noFault) {
-				if (!noMessage) console.warn(e)
-			} else
-				throw e
-		}
-	}
 
 })
