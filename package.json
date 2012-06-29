@@ -11,8 +11,7 @@
   "main": "index.js",
   "dependencies": {
 	"knit": "*",
-	"wool": "*",
-	"mu2": "*"
+	"wool": "*"
   },
   "devDependencies": {},
   "optionalDependencies": {},

@@ -9,11 +9,10 @@
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and limitations under the License.
  */
-
+ 
 require('knit').inject(function (wool,knit) {
 	knit.config(function (bind) {
 		bind('llama').to(require(__dirname + '/../lib/llama.js'))
-		bind('str_to_obj').to(wool.str_to_obj).is('builder')
 	}).inject(function (fs, llama, str_to_obj) {
 		
 		var default_options_location = __dirname + '/../config.json',
