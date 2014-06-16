@@ -2,7 +2,7 @@
   "author": "Nicolas Lochet",
   "name": "llama",
   "description": "Small convention-oriented, filesystem JSON-based, CMS server",
-  "version": "0.0.3",
+  "version": "0.1.0",
   "homepage": "https://github.com/nicocube/llama",
   "repository": {
     "type": "git",
@@ -10,8 +10,8 @@
   },
   "main": "index.js",
   "dependencies": {
-	"knit": "*",
-	"wool": "*"
+	"knit": "0.2.0",
+	"wool": "0.0.3"
   },
   "devDependencies": {},
   "optionalDependencies": {},

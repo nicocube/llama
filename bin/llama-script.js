@@ -10,7 +10,7 @@
  * See the License for the specific language governing permissions and limitations under the License.
  */
  
-require('knit').inject(function (wool,knit) {
+require('knit').inject(function (knit) {
 	knit.config(function (bind) {
 		bind('llama').to(require(__dirname + '/../lib/llama.js'))
 	}).inject(function (fs, llama, str_to_obj) {
