@@ -1,4 +1,4 @@
 Llama
 =====
 
-Small convention-oriented, filesystem JSON-based, CMS server
+Wooly, sure-footed, your next tool for SPA development.

@@ -1,22 +1,24 @@
 {
-  "author": "Nicolas Lochet",
-  "name": "llama",
-  "description": "Small convention-oriented, filesystem JSON-based, CMS server",
-  "version": "0.1.0",
-  "homepage": "https://github.com/nicocube/llama",
-  "repository": {
-    "type": "git",
-    "url": "git://github.com/nicocube/llama.git"
-  },
-  "main": "index.js",
-  "dependencies": {
-	"knit": "0.2.0",
-	"wool": "0.0.3"
-  },
-  "devDependencies": {},
-  "optionalDependencies": {},
-  "engines": {
-    "node": "*"
-  },
-  "bin" : { "llama" : "./bin/llama-script.js" }
+    "author": "Nicolas Lochet",
+    "name": "llama",
+    "description": "Wooly, sure-footed, your next tool for SPA development.",
+    "version": "0.1.0",
+    "homepage": "https://github.com/nicocube/llama",
+    "repository": {
+        "type": "git",
+        "url": "git://github.com/nicocube/llama.git"
+    },
+    "main": "lib/llama.js",
+    "scripts": {
+        "test": "node_modules/jasmine-node/bin/jasmine-node spec/",
+        "autotest": "node_modules/jasmine-node/bin/jasmine-node --autotest --watch lib/ --test-dir spec/"
+    },
+    "engines": {
+        "node": "0.10.*"
+    },
+    "dependencies": {},
+    "devDependencies": {
+        "jasmine-node": "1.11.*"
+    },
+    "optionalDependencies": {}
 }
