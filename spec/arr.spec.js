@@ -11,8 +11,8 @@
 
 var arr = require(__dirname+'/../lib/arr.js')
 describe("Array methods:", function() {
-    var a = arr([1, 2, 3])
     describe("final method:", function() {
+        var a = arr([1, 2, 3])
         describe("forEach:", function() {
             it("count", function() {
                 var c = 0
@@ -51,18 +51,24 @@ describe("Array methods:", function() {
     describe("chainable method:", function() {
         describe("map:", function() {
             it("square", function() {
-                expect(a.map(function(x) {return x*x}).get()).toEqual([1,4,9])
+                expect(arr([1, 2, 3]).map(function(x) {return x*x}).get()).toEqual([1,4,9])
             })
             it("to text", function() {
-                expect(a.map(function(x) {var i = 0, r='';for(; i < x; i+=1) {r += 'x'}; return r}).get()).toEqual(['x','xx','xxx'])
+                expect(arr([1, 2, 3]).map(function(x) {var i = 0, r='';for(; i < x; i+=1) {r += 'x'}; return r}).get()).toEqual(['x','xx','xxx'])
             })
         })
         describe("filter:", function() {
             it("odd", function() {
-                expect(a.filter(function(a) {return a%2===1}).get()).toEqual([1,3])
+                expect(arr([1, 2, 3]).filter(function(a) {return a%2===1}).get()).toEqual([1,3])
             })
             it("even", function() {
-                expect(a.filter(function(a) {return a%2===0}).get()).toEqual([2])
+                expect(arr([1, 2, 3]).filter(function(a) {return a%2===0}).get()).toEqual([2])
+            })
+        })
+        describe("map-filter:", function() {
+            var a = arr([1, 2, 3])
+            it("combine", function() {
+                expect(arr([1, 2, 3]).map(function(x) {return x*x}).filter(function(a) {return a%2===1}).map(function(x) {var i = 0, r='';for(; i < x; i+=1) {r += 'x'}; return r}).get()).toEqual(['x','xxxxxxxxx'])
             })
         })
     })
