@@ -66,6 +66,14 @@ describe("Array methods:", function() {
                 expect(a.filter(function(a) {return a%2===0}).get()).toEqual([2])
             })
         })
+        describe("slice:", function() {
+            it("[1]", function() {
+                expect(a.slice(0,1).get()).toEqual([1])
+            })
+            it("[2, 3]", function() {
+                expect(a.slice(1).get()).toEqual([2,3])
+            })
+        })
         describe("map-filter:", function() {
             it("combine", function() {
                 expect(a.map(function(x) {return x*x}).filter(function(a) {return a%2===1}).map(function(x) {var i = 0, r='';for(; i < x; i+=1) {r += 'x'}; return r}).get()).toEqual(['x','xxxxxxxxx'])
