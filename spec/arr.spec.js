@@ -70,6 +70,9 @@ describe("Array methods:", function() {
             it("[1]", function() {
                 expect(a.slice(0,1).get()).toEqual([1])
             })
+            it("[2]", function() {
+                expect(a.slice(1,2).get()).toEqual([2])
+            })
             it("[2, 3]", function() {
                 expect(a.slice(1).get()).toEqual([2,3])
             })
@@ -77,6 +80,14 @@ describe("Array methods:", function() {
         describe("map-filter:", function() {
             it("combine", function() {
                 expect(a.map(function(x) {return x*x}).filter(function(a) {return a%2===1}).map(function(x) {var i = 0, r='';for(; i < x; i+=1) {r += 'x'}; return r}).get()).toEqual(['x','xxxxxxxxx'])
+            })
+        })
+        describe("map-filter-slice:", function() {
+            it("combine", function() {
+                expect(a.map(function(x) {return x*x}).filter(function(a) {return a%2===1}).slice(0,1).map(function(x) {var i = 0, r='';for(; i < x; i+=1) {r += 'x'}; return r}).get()).toEqual(['x'])
+            })
+            it("combine", function() {
+                expect(a.map(function(x) {return x*x}).filter(function(a) {return a%2===1}).slice(1).map(function(x) {var i = 0, r='';for(; i < x; i+=1) {r += 'x'}; return r}).get()).toEqual(['xxxxxxxxx'])
             })
         })
     })

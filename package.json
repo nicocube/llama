@@ -1,24 +1,27 @@
 {
-    "author": "Nicolas Lochet",
-    "name": "llama",
-    "description": "Wooly, sure-footed, your next tool for SPA development.",
-    "version": "0.1.0",
-    "homepage": "https://github.com/nicocube/llama",
-    "repository": {
-        "type": "git",
-        "url": "git://github.com/nicocube/llama.git"
-    },
-    "main": "lib/llama.js",
-    "scripts": {
-        "test": "jasmine-node spec/",
-        "autotest": "jasmine-node --autotest --watch lib/ --test-dir spec/"
-    },
-    "engines": {
-        "node": "0.10.*"
-    },
-    "dependencies": {},
-    "devDependencies": {
-        "jasmine-node": "1.11.*"
-    },
-    "optionalDependencies": {}
+  "author": "Nicolas Lochet",
+  "name": "llama",
+  "description": "Wooly, sure-footed, your next tool for SPA development.",
+  "version": "0.1.0",
+  "homepage": "https://github.com/nicocube/llama",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/nicocube/llama.git"
+  },
+  "main": "lib/llama.js",
+  "scripts": {
+    "test": "jasmine-node spec/",
+    "autotest": "jasmine-node --autotest --watch lib/ --test-dir spec/",
+    "coverage": "istanbul cover jasmine-node spec/"
+  },
+  "engines": {
+    "node": "0.10.*"
+  },
+  "dependencies": {
+  },
+  "devDependencies": {
+    "jasmine-node": "1.11.*",
+    "istanbul": "~0.3.11"
+  },
+  "optionalDependencies": {}
 }
