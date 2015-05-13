@@ -18,15 +18,15 @@ describe("template testing", function() {
     
     it("simple template", function() {
         var template = llama(function() {
-            return div({id:'plop', _:'paf pouf'}, h1("Hello ", $.name, "!"),
+            return div({id:'plop', _:'paf pouf'}, h1("Hello ", $name(), "!"),
                 ul(each([1,2,3],
-                    li('plip:', $)
+                    li('plip:', $())
                 )),
                 div(
                     each({i: [1,2,3]},
-                        div('i:', $.i),
+                        div('i:', $i()),
                         each({j: [1,2,3]},
-                            div('j:', $.i, '*', $.j)
+                            div('j:', $i(), '*', $j())
                         )
                     )
                 )
