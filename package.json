@@ -21,7 +21,7 @@
     "mlf": "0.1.*"
   },
   "devDependencies": {
-    "jasmine-node": "1.11.*",
+    "jasmine-node": "1.14.*",
     "istanbul": "~0.3.11"
   },
   "optionalDependencies": {}
