@@ -16,7 +16,40 @@ var llama = require( __dirname + '/../lib/llama.js')(require('mlf'))
 describe("template testing", function() {
     "use strict"
     
-    it("simple template", function() {
+    it("Hello world!", function() {
+        var template = llama(function() {
+            return h1("Hello World!");
+        })
+        
+        var res = template()        
+        expect(res).toEqual('<h1>Hello World!</h1>')
+
+    })
+    it("simple each", function() {
+        var template = llama(function() {
+            return ul(each([1,2,3], li('plip:', $()) ))
+        })
+        
+        var res = template()        
+        expect(res).toEqual('<ul><li>plip:1</li><li>plip:2</li><li>plip:3</li></ul>')
+    })
+    it("embeded each", function() {
+        var template = llama(function() {
+            return div(
+                each({i: [1,2,3]},
+                    div('i:', $i()),
+                    each({j: [1,2,3]},
+                        div('j:', $i(), '*', $j())
+                    )
+                )
+            )
+        })
+        
+        var res = template()
+        expect(res).toEqual('<div><div>i:1</div><div>j:1*1</div><div>j:1*2</div><div>j:1*3</div><div>i:2</div><div>j:2*1</div><div>j:2*2</div><div>j:2*3</div><div>i:3</div><div>j:3*1</div><div>j:3*2</div><div>j:3*3</div></div>')
+
+    })
+    it("complex template", function() {
         var template = llama(function() {
             return div({id:'plop', _:'paf pouf'}, h1("Hello ", $name(), "!"),
                 ul(each([1,2,3],
@@ -33,7 +66,7 @@ describe("template testing", function() {
             )
         })
         
-        var res = template({name: 'Plop'})        
+        var res = template({name: 'Plop'})
         expect(res).toEqual('<div id="plop" class="paf pouf"><h1>Hello Plop!</h1><ul><li>plip:1</li><li>plip:2</li><li>plip:3</li></ul><div><div>i:1</div><div>j:1*1</div><div>j:1*2</div><div>j:1*3</div><div>i:2</div><div>j:2*1</div><div>j:2*2</div><div>j:2*3</div><div>i:3</div><div>j:3*1</div><div>j:3*2</div><div>j:3*3</div></div></div>')
 
     })
