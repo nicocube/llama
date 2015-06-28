@@ -9,123 +9,61 @@
  * See the License for the specific language governing permissions and limitations under the License.
  */
 
-
-var llama = require( __dirname + '/../lib/llama.js')(require('mlf'), require('node.extend'))
+var t = require( __dirname + '/../lib/llama.js')(require('mlf'))
 
 describe("template testing", function() {
     "use strict"
+    
+    it("events", function() {
+		var
+		$name = t.$("Plop"),
+		$arr = t.$([1,2,3]),
+		template = t.div({$:'main', _:'content'},
+			t.h1("Hello ", $name(), "!"),
+			t.ul($arr.each(
+				t.li('plip:', $arr._v())
+			))
+		)
 
-    xdescribe("no options", function() {
-        it("Hello world!", function() {
-            var template = llama(function() {
-                return h1("Hello World!");
-            })
+		var res = template.render()
+		
+		expect(res).toEqual('<div id="main" class="content"><h1 id="49u">Hello Plop!</h1><ul id="7iv"><li id="arw">plip:1</li><li id="e0x">plip:2</li><li id="h9y">plip:3</li></ul></div>')
 
-            var res = template()
-            expect(res).toEqual('<h1>Hello World!</h1>')
+		var cbCalled = false
+		template.listen(function(id, content) {
+			cbCalled = true
+			console.log('id:',id)
+			console.log('content:', content)
+			expect(id).toEqual('49u')
+			expect(content).toEqual('Hello Plouic!')
+		})
 
-        })
-        it("simple each", function() {
-            var template = llama(function() {
-                return ul(each([1,2,3], li('plip:', $()) ))
-            })
+		$name('plouic')
+		//expect(cbCalled).toEqual(true)
+	})
+    
+    xit("events with indentation", function() {
+		var
+		$name = t.$("Plop"),
+		$arr = t.$([1,2,3]),
+		template = t.div({$:'main', _:'content'},
+			t.h1("Hello ", $name(), "!"),
+			t.ul($arr.each(
+				t.li('plip:', t._())
+			))
+		)
 
-            var res = template()
-            expect(res).toEqual('<ul><li>plip:1</li><li>plip:2</li><li>plip:3</li></ul>')
-        })
-        it("embeded each", function() {
-            var template = llama(function() {
-                return div(
-                    each({i: [1,2,3]},
-                        div('i:', $i()),
-                        each({j: [1,2,3]},
-                            div('j:', $i(), '*', $j())
-                        )
-                    )
-                )
-            })
+		var res = template.render({indent: 2})
+		
+		expect(res).toEqual('<div id="main" class="content">\n  <h1 id="main-h1-a">Hello Plop!</h1>\n  <ul id="main-ul-a">\n    <li id="main-ul-a-li-a">plip:1</li>\n    <li id="main-ul-a-li-b">plip:2</li>\n    <li id="main-ul-a-li-c">plip:3</li>\n  </ul>\n</div>')
 
-            var res = template()
-            expect(res).toEqual('<div><div>i:1</div><div>j:1*1</div><div>j:1*2</div><div>j:1*3</div><div>i:2</div><div>j:2*1</div><div>j:2*2</div><div>j:2*3</div><div>i:3</div><div>j:3*1</div><div>j:3*2</div><div>j:3*3</div></div>')
+		template.listen(function(id, content) {
+			console.log('id:',id)
+			console.log('content:', content)
+		})
 
-        })
-        it("complex template", function() {
-            var template = llama(function() {
-                return div({id:'plop', _:'paf pouf'}, h1("Hello ", $name(), "!"),
-                    ul(each([1,2,3],
-                        li('plip:', $())
-                    )),
-                    div(
-                        each({i: [1,2,3]},
-                            div('i:', $i()),
-                            each({j: [1,2,3]},
-                                div('j:', $i(), '*', $j())
-                            )
-                        )
-                    )
-                )
-            })
-
-            var res = template({name: 'Plop'})
-            expect(res).toEqual('<div id="plop" class="paf pouf"><h1>Hello Plop!</h1><ul><li>plip:1</li><li>plip:2</li><li>plip:3</li></ul><div><div>i:1</div><div>j:1*1</div><div>j:1*2</div><div>j:1*3</div><div>i:2</div><div>j:2*1</div><div>j:2*2</div><div>j:2*3</div><div>i:3</div><div>j:3*1</div><div>j:3*2</div><div>j:3*3</div></div></div>')
-
-        })
-    })
-
-    describe("indent option", function() {
-        it("Hello world!", function() {
-            var template = llama(function() {
-                return h1("Hello World!");
-            })
-
-            var res = template({},{indent:4})
-            expect(res).toEqual('<h1>Hello World!</h1>')
-
-        })
-        it("simple each", function() {
-            var template = llama(function() {
-                return ul(each([1,2,3], li('plip:', $()) ))
-            })
-
-            var res = template({},{indent:4})
-            expect(res).toEqual('<ul>\n    <li>plip:1</li>\n    <li>plip:2</li>\n    <li>plip:3</li>\n</ul>')
-        })
-        xit("embeded each", function() {
-            var template = llama(function() {
-                return div(
-                    each({i: [1,2,3]},
-                        div('i:', $i()),
-                        each({j: [1,2,3]},
-                            div('j:', $i(), '*', $j())
-                        )
-                    )
-                )
-            })
-
-            var res = template({},{indent:4})
-            expect(res).toEqual('<div>\n    <div>i:1</div>\n    <div>j:1*1</div>\n    <div>j:1*2</div>\n    <div>j:1*3</div>\n    <div>i:2</div>\n    <div>j:2*1</div>\n    <div>j:2*2</div>\n    <div>j:2*3</div>\n    <div>i:3</div>\n    <div>j:3*1</div>\n    <div>j:3*2</div>\n    <div>j:3*3</div>\n</div>')
-
-        })
-        xit("complex template", function() {
-            var template = llama(function() {
-                return div({id:'plop', _:'paf pouf'}, h1("Hello ", $name(), "!"),
-                    ul(each([1,2,3],
-                        li('plip:', $())
-                    )),
-                    div(
-                        each({i: [1,2,3]},
-                            div('i:', $i()),
-                            each({j: [1,2,3]},
-                                div('j:', $i(), '*', $j())
-                            )
-                        )
-                    )
-                )
-            })
-
-            var res = template({name: 'Plop'},{indent:4})
-            expect(res).toEqual('<div id="plop" class="paf pouf">\n    <h1>Hello Plop!</h1>\n    <ul>\n        <li>plip:1</li>\n        <li>plip:2</li>\n        <li>plip:3</li>\n    </ul>\n    <div>\n        <div>i:1</div>\n        <div>j:1*1</div>\n        <div>j:1*2</div>\n        <div>j:1*3</div>\n        <div>i:2</div>\n        <div>j:2*1</div>\n        <div>j:2*2</div>\n        <div>j:2*3</div>\n        <div>i:3</div>\n        <div>j:3*1</div>\n        <div>j:3*2</div>\n        <div>j:3*3</div>\n    </div>\n</div>')
-
-        })
-    })
+		$name('plouic')
+		// console.log -> id: main-h1-a
+		// console.log -> content: Hello Plouic!
+	})
 })
