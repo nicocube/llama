@@ -9,12 +9,13 @@
  * See the License for the specific language governing permissions and limitations under the License.
  */
 
-var t = require( __dirname + '/../lib/llama.js')(require('mlf'))
+var llama = require( __dirname + '/../lib/llama.js');
 
 describe("template", function() {
     "use strict"
 
     describe("basic testing", function() {
+        var t = llama(require('mlf'))
         var
         $name = t.$("Plop"),
         $arr = t.$([1,2,3]),
@@ -45,30 +46,22 @@ describe("template", function() {
         })
 	})
     
-    xdescribe("basic testing", function() {
-        xit("events with indentation", function() {
+    describe("render options", function() {
+        var t = llama()
+        it("events with indentation", function() {
             var
             $name = t.$("Plop"),
             $arr = t.$([1,2,3]),
             template = t.div({$:'main', _:'content'},
                 t.h1("Hello ", $name(), "!"),
                 t.ul($arr.each(
-                    t.li('plip:', t._())
+                    t.li('plip:', $arr._v())
                 ))
             )
 
             var res = template.render({indent: 2})
             
             expect(res).toEqual('<div id="main" class="content">\n  <h1 id="main-h1-a">Hello Plop!</h1>\n  <ul id="main-ul-a">\n    <li id="main-ul-a-li-a">plip:1</li>\n    <li id="main-ul-a-li-b">plip:2</li>\n    <li id="main-ul-a-li-c">plip:3</li>\n  </ul>\n</div>')
-
-            template.listen(function(id, content) {
-                console.log('id:',id)
-                console.log('content:', content)
-            })
-
-            $name('plouic')
-            // console.log -> id: main-h1-a
-            // console.log -> content: Hello Plouic!
         })
 	})
 })
