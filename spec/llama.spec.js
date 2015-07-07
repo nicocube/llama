@@ -61,7 +61,7 @@ describe("template", function() {
 
             var res = template.render({indent: 2})
             
-            expect(res).toEqual('<div id="main" class="content">\n  <h1 id="main-h1-a">Hello Plop!</h1>\n  <ul id="main-ul-a">\n    <li id="main-ul-a-li-a">plip:1</li>\n    <li id="main-ul-a-li-b">plip:2</li>\n    <li id="main-ul-a-li-c">plip:3</li>\n  </ul>\n</div>')
+            expect(res).toEqual('<div id="main" class="content">\n  <h1 id="49u">Hello Plop!</h1>\n  <ul id="7iv">\n    <li id="arw">plip:1</li>\n    <li id="e0x">plip:2</li>\n    <li id="h9y">plip:3</li>\n  </ul>\n</div>')
         })
 	})
 })
