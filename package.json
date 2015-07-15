@@ -12,7 +12,8 @@
   "scripts": {
     "test": "jasmine-node spec/",
     "autotest": "jasmine-node --autotest --watch lib/ --test-dir spec/",
-    "coverage": "istanbul cover jasmine-node spec/"
+    "coverage": "istanbul cover jasmine-node spec/",
+    "bench": "node bench/generate_n_times.js"
   },
   "engines": {
     "node": "0.10.*"
