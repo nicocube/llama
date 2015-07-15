@@ -45,6 +45,40 @@ describe("template", function() {
             expect(cbCalled).toEqual(true, "Listener was not called")
         })
 	})
+
+    describe("modular testing", function() {
+        var t = llama(require('mlf'))
+        var
+        $name = t.$("Plop"),
+        $arr = t.$([1,2,3]),
+        template = (function($n, $a) {
+			return t.div({$:'main', _:'content'},
+				t.h1("Hello ", $n(), "!"),
+				t.ul($a.each(
+					t.li('plip:', $a._v())
+				))
+			)
+		})($name, $arr)
+
+        it("simple Rendering", function() {
+            var res = template.render()
+            expect(res).toEqual('<div id="main" class="content"><h1 id="49u">Hello Plop!</h1><ul id="7iv"><li id="arw">plip:1</li><li id="e0x">plip:2</li><li id="h9y">plip:3</li></ul></div>')
+        })
+        
+        it("event on simple var", function() {
+            var cbCalled = false
+            template.listen(function(id, content) {
+                cbCalled = true
+                //console.log('id:',id)
+                //console.log('content:', content)
+                expect(id).toEqual('49u')
+                expect(content).toEqual('Hello Plouic!')
+            })
+
+            $name('Plouic')
+            expect(cbCalled).toEqual(true, "Listener was not called")
+        })
+	})
     
     describe("render options", function() {
         var t = llama()
