@@ -81,8 +81,8 @@ describe("template", function() {
 	})
     
     describe("render options", function() {
-        var t = llama()
         it("events with indentation", function() {
+			var t = llama()
             var
             $name = t.$("Plop"),
             $arr = t.$([1,2,3]),
@@ -97,5 +97,19 @@ describe("template", function() {
             
             expect(res).toEqual('<div id="main" class="content">\n  <h1 id="49u">Hello Plop!</h1>\n  <ul id="7iv">\n    <li id="arw">plip:1</li>\n    <li id="e0x">plip:2</li>\n    <li id="h9y">plip:3</li>\n  </ul>\n</div>')
         })
+        
+        it("ids rendering", function() {
+			var t = llama()
+			  , builder = function () { return t.div(t.h1('Plouic!')) }
+			  , res0 = builder().render()
+			  , res1 = builder().render()
+			  , res2 = builder().render({startIds:0})
+			  , res3 = builder().render({startIds:0})
+			
+			expect(res0).toEqual('<div id="49u"><h1 id="7iv">Plouic!</h1></div>')
+			expect(res1).toEqual('<div id="arw"><h1 id="e0x">Plouic!</h1></div>')
+			expect(res2).toEqual('<div id="49u"><h1 id="7iv">Plouic!</h1></div>')
+			expect(res3).toEqual('<div id="49u"><h1 id="7iv">Plouic!</h1></div>')
+		})
 	})
 })
