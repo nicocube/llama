@@ -10,10 +10,13 @@
   },
   "main": "lib/llama.js",
   "scripts": {
+    "pretest": "npm run lint",
     "test": "jasmine-node spec/",
     "autotest": "jasmine-node --autotest --watch lib/ --test-dir spec/",
     "coverage": "istanbul cover jasmine-node spec/",
-    "bench": "node bench/generate_n_times.js"
+    "bench": "node bench/generate_n_times.js",
+    "lint": "eslint lib/*",
+    "autolint": "nodemon -x eslint lib/*"
   },
   "engines": {
     "node": "0.10.*"
@@ -22,8 +25,9 @@
     "mlf": "0.1.*"
   },
   "devDependencies": {
-    "jasmine-node": "1.14.*",
-    "istanbul": "~0.3.11"
+    "eslint": "^1.0.0",
+    "istanbul": "~0.3.11",
+    "jasmine-node": "1.14.*"
   },
   "optionalDependencies": {}
 }
