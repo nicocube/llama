@@ -11,9 +11,9 @@
 
 var llama = require( __dirname + '/../lib/llama.js');
 
-xdescribe("array manipulation", function() {
+describe("array manipulation", function() {
 
-	it("events with indentation", function() {
+	it("set values with indices", function() {
 		var t = llama()
 		var
 		$name = t.$("Plop"),
@@ -24,26 +24,42 @@ xdescribe("array manipulation", function() {
 				t.li('plip:', $arr._v())
 			))
 		)
-		var cbCalled = false
+		var cbCalled = 0
+		var expected = [
+			{id : 'kiz', content: 'plip:42'},
+			{id : 'xj3', content: 'plip: with love from Russia'}
+		]
+		
 		
 		template.listen(function(id, content, action) {
-			cbCalled = true
-			//console.log('id:',id)
-			//console.log('content:', content)
-			expect(id).toEqual('arw')
-			expect(content).toEqual('plip:42')
+			console.log('id:',id)
+			console.log('content:', content)
+			
+			if (cbCalled in expected) {
+				var e = expected[cbCalled]
+				expect(id).toEqual(e.id)
+				expect(content).toEqual(e.content)
+			}
+			
+			cbCalled +=1
 		})
 
 		var res = template.render()
 		
 		expect(res).toEqual('<div id="main" class="content"><h1 id="7iv">Hello Plop!</h1><ul id="arw"><li id="kiz">plip:1</li><li id="r11">plip:2</li><li id="xj3">plip:3</li></ul></div>')
 		
-		$arr.set(0, 42)
+		$arr.setValue(0, 42)
 		
 		res = template.render()
 		
-		expect(res).toEqual('<div id="main" class="content"><h1 id="7iv">Hello Plop!</h1><ul id="arw"><li id="kiz">plip:1</li><li id="r11">plip:2</li><li id="xj3">plip:3</li></ul></div>')
+		expect(res).toEqual('<div id="main" class="content"><h1 id="7iv">Hello Plop!</h1><ul id="arw"><li id="kiz">plip:42</li><li id="r11">plip:2</li><li id="xj3">plip:3</li></ul></div>')
 		
-		expect(cbCalled).toEqual(true, "Listener was not called")
+		$arr.setValue(2, " with love from Russia")
+		
+		res = template.render()
+		
+		expect(res).toEqual('<div id="main" class="content"><h1 id="7iv">Hello Plop!</h1><ul id="arw"><li id="kiz">plip:42</li><li id="r11">plip:2</li><li id="xj3">plip: with love from Russia</li></ul></div>')
+		
+		expect(cbCalled).toEqual(2, "Listener has to be called twice and only twice.")
 	})
 })
