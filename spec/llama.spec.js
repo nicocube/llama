@@ -28,7 +28,7 @@ describe("template", function() {
 
         it("simple Rendering", function() {
             var res = template.render()
-            expect(res).toEqual('<div id="main" class="content"><h1 id="49u">Hello Plop!</h1><ul id="7iv"><li id="arw">plip:1</li><li id="e0x">plip:2</li><li id="h9y">plip:3</li></ul></div>')
+            expect(res).toEqual('<div id="main" class="content"><h1 id="7iv">Hello Plop!</h1><ul id="arw"><li id="kiz">plip:1</li><li id="r11">plip:2</li><li id="xj3">plip:3</li></ul></div>')
         })
         
         it("event on simple var", function() {
@@ -37,7 +37,7 @@ describe("template", function() {
                 cbCalled = true
                 //console.log('id:',id)
                 //console.log('content:', content)
-                expect(id).toEqual('49u')
+                expect(id).toEqual('7iv')
                 expect(content).toEqual('Hello Plouic!')
             })
 
@@ -62,7 +62,7 @@ describe("template", function() {
 
         it("simple Rendering", function() {
             var res = template.render()
-            expect(res).toEqual('<div id="main" class="content"><h1 id="49u">Hello Plop!</h1><ul id="7iv"><li id="arw">plip:1</li><li id="e0x">plip:2</li><li id="h9y">plip:3</li></ul></div>')
+            expect(res).toEqual('<div id="main" class="content"><h1 id="7iv">Hello Plop!</h1><ul id="arw"><li id="kiz">plip:1</li><li id="r11">plip:2</li><li id="xj3">plip:3</li></ul></div>')
         })
         
         it("event on simple var", function() {
@@ -71,7 +71,7 @@ describe("template", function() {
                 cbCalled = true
                 //console.log('id:',id)
                 //console.log('content:', content)
-                expect(id).toEqual('49u')
+                expect(id).toEqual('7iv')
                 expect(content).toEqual('Hello Plouic!')
             })
 
@@ -95,7 +95,7 @@ describe("template", function() {
 
             var res = template.render({indent: 2})
             
-            expect(res).toEqual('<div id="main" class="content">\n  <h1 id="49u">Hello Plop!</h1>\n  <ul id="7iv">\n    <li id="arw">plip:1</li>\n    <li id="e0x">plip:2</li>\n    <li id="h9y">plip:3</li>\n  </ul>\n</div>')
+            expect(res).toEqual('<div id="main" class="content">\n  <h1 id="7iv">Hello Plop!</h1>\n  <ul id="arw">\n    <li id="kiz">plip:1</li>\n    <li id="r11">plip:2</li>\n    <li id="xj3">plip:3</li>\n  </ul>\n</div>')
         })
     })
 

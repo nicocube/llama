@@ -15,7 +15,8 @@
         "semi": [
             2,
             "never"
-        ]
+        ],
+        no-console: 1
     },
     "env": {
         "node": true,

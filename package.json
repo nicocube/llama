@@ -12,7 +12,7 @@
   "scripts": {
     "pretest": "npm run lint",
     "test": "jasmine-node spec/",
-    "autotest": "jasmine-node --autotest --watch lib/ --test-dir spec/",
+    "autotest": "nodemon -x 'npm test'",
     "coverage": "istanbul cover jasmine-node spec/",
     "bench": "node bench/generate_n_times.js",
     "lint": "eslint lib/*",
