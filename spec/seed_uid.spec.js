@@ -22,6 +22,11 @@ describe("seed_uid", function() {
 		expect(uid()).toEqual('h9y')
 		expect(uid()).toEqual('kiz')
 		expect(uid()).toEqual('ns0')
+		expect(uid()).toEqual('r11')
+		expect(uid()).toEqual('ua2')
+		expect(uid()).toEqual('xj3')
+		expect(uid()).toEqual('1s4')
+		expect(uid()).toEqual('515')
 	})
 	it("startWith 42", function() {
 		var uid = seed_uid(42)

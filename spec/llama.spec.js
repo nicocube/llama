@@ -11,7 +11,7 @@
 
 var llama = require( __dirname + '/../lib/llama.js');
 
-describe("template", function() {
+xdescribe("template", function() {
     "use strict"
 
     describe("basic testing", function() {
