@@ -16,7 +16,8 @@
             2,
             "never"
         ],
-        no-console: 1
+        "no-trailing-spaces": [1, { "skipBlankLines": true }],
+        "no-console": 1
     },
     "env": {
         "node": true,
