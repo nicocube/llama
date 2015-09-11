@@ -2,7 +2,7 @@
   "author": "Nicolas Lochet",
   "name": "llama",
   "description": "Wooly, sure-footed, your next tool for SPA development.",
-  "version": "0.2.5",
+  "version": "0.2.6",
   "homepage": "https://github.com/nicocube/llama",
   "repository": {
     "type": "git",
