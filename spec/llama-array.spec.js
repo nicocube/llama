@@ -205,6 +205,6 @@ describe("array manipulation", function() {
 		
 		expect(res).toEqual('<div id="main" class="content"><h1 id="7iv">Hello Plop!</h1><ul id="arw"><li id="kiz">plip:42</li><li id="r11">plip:foo</li><li id="xj3">plip:3</li></ul></div>')
 		
-		expect(cbCalled).toEqual(4, "Listener has to be called twice and only twice.")
+		expect(cbCalled).toEqual(4, "Listener has to be called four times.")
 	})
 })
