@@ -57,7 +57,7 @@ describe("object manipulation", function() {
 		$obj.val({})
 		
 		res = template.render()
-		expect(res).toEqual('<div id="main" class="content"><h1 id="7iv">Hello !</h1></div>')
+		expect(res).toEqual('<div id="main" class=""><h1 id="7iv">Hello !</h1></div>')
 		
 		expect(cbCalled).toEqual(expected.length, "Listener has to be called "+expected.length+" times.")
 	})
