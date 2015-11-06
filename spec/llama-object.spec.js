@@ -35,7 +35,9 @@ describe("object manipulation", function() {
 		var cbCalled = 0
 		var expected = [
 			{id : '7iv', content: 'Hello Foo!'},
-			{id : '7iv', content: 'Hello !'}
+			{id : '7iv', content: 'Hello !'},
+			{id : 'main', content: ''},
+			{id : 'main', content: 'paf'}
 		]
 		template.listen(function(id, content, action) {
 			if (cbCalled in expected) {
