@@ -11,33 +11,28 @@
 
 module.exports = function (t) {
     return function (name) {
-        //console.log(name() instanceof t.LlamaVar)
         return t.html(
-            t.head(t.title('Hello ', name(), '!')),
+            t.head(t.title('Todo-List')),
             t.body(
-                t.h1('Hello ', name(), '!'),
-                t.input({$:'data', value: name().val()}),
-                t.script({src: './client.js'},'')
+				t.ul({_:'todo-list'},
+					t.input({$: 'create', _:'edit', value:"Create a TodoMVC template"}),
+					t.li({_:'completed'},
+						t.div({_:'view'},
+							t.input({_:'toggle', type:'checkbox', checked:true}),
+							t.label('Taste JavaScript'),
+							t.button({_:'destroy'})
+						)
+					),
+					t.li(
+						t.div({_:'view'},
+							t.input({_:'toggle', type:'checkbox'}),
+							t.label('Buy a unicorn'),
+							t.button({_:'destroy'})
+						)
+					)
+				),
+                t.script({src: './client.js'},'')               
             )
         )
     }
 }
-t.ul({_:'todo-list'},$arr.each(
-    t.li({_:'completed'},
-        t.div({_:'view'},
-            t.input({_:'toggle', type:'checkbox', checked:true}),
-            t.label('Taste JavaScript'),
-            t.button({_:'destroy'})
-        ),
-        t.input({_:'edit', value:"Create a TodoMVC template"})
-    )
-	
-    t.li(
-        t.div({_:'view'},
-			t.input({_:'toggle', type:'checkbox'}),
-			t.label('Buy a unicorn'),
-            t.button({_:'destroy'})
-        ),
-        t.input({_:'edit', value:"Rule the web"})
-    )
-))

@@ -9,26 +9,24 @@
  * See the License for the specific language governing permissions and limitations under the License.
  */
 
-var express = require('express')
-  , app = express()
-  , router = express.Router()
-  , morgan = require('morgan')
-  , browserify = require('browserify-middleware')
-  , favicon = require('serve-favicon')
-  , t = require('llama')()
+var t = require('llama')()
   , main = require('./template.js')(t)
-  , options = {startIds:0, indent: 2}
+  , name = t.$(data)
+  , page = main(name)
+  , data = document.getElementById('data')
 
-app.use(favicon(__dirname + '/public/favicon.ico'))
-app.use(morgan('dev'))
-app.use(router)
+//console.log(document.getElementsByTagName('html').item(0).id)
 
-router.get('/client.js', browserify('./client.js'))
-
-router.get('/', function (req, res) {
-    var name = t.$('')
-    res.send(main(name).render(options))
+page.listen(function(id, html) {
+    console.log('id', id, html)
+    document.getElementById(id).innerHTML = html
 })
 
-app.listen(3000)
-process.stdout.write('Server is running.\nOpen http://localhost:3000/\n')
+function onevent() {
+    console.log('event', data.value)
+    name(data.value)
+    history.pushState(null, null, '/'+data.value)
+}
+
+data.addEventListener('keyup', onevent)
+data.addEventListener('change', onevent)
