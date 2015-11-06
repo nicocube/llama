@@ -36,14 +36,15 @@ describe("object manipulation", function() {
 		var expected = [
 			{id : '7iv', content: 'Hello Foo!'},
 			{id : '7iv', content: 'Hello !'},
-			{id : 'main', content: ''},
-			{id : 'main', content: 'paf'}
+			{id : 'main', content: [{class:''}], action: 'arg'},
+			{id : 'main', content: [{class:'paf'}], action: 'arg'}
 		]
 		template.listen(function(id, content, action) {
 			if (cbCalled in expected) {
 				var e = expected[cbCalled]
 				expect(id).toEqual(e.id)
 				expect(content).toEqual(e.content)
+				expect(action).toEqual(e.action)
 			}
 			cbCalled +=1
 		})
