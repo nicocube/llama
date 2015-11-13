@@ -69,4 +69,16 @@ describe("object manipulation", function() {
         
 		expect(cbCalled).toEqual(expected.length, "Listener has to be called "+expected.length+" times.")
 	})
+
+	it("render array of object", function() {
+		var t = llama()
+		var
+		$arr = t.$([
+            {name: 'Plop', style: {content: 'foo'}},
+            {name: 'Plip', style: {content: 'bar'}},
+        ]),
+		template = t.div({$:'main'}, $arr.each(t.div({_:$arr._v().style.content()},t.h1("Hello ", $arr._v().name(), "!"))))
+		var res = template.render()
+		expect(res).toEqual('<div id="main"><div class="foo"><h1 id="7iv">Hello Plop!</h1></div><div class="bar"><h1 id="7iv">Hello Plip!</h1></div></div>')
+	})
 })
