@@ -77,8 +77,8 @@ describe("object manipulation", function() {
             {name: 'Plop', style: {content: 'foo'}},
             {name: 'Plip', style: {content: 'bar'}},
         ]),
-		template = t.div({$:'main'}, $arr.each(t.div({_:$arr._v().style.content()},t.h1("Hello ", $arr._v().name(), "!"))))
+		template = t.div({$:'main'}, $arr.each(t.div({_:$arr._v().style.content},t.h1("Hello ", $arr._v().name, "!"))))
 		var res = template.render()
-		expect(res).toEqual('<div id="main"><div class="foo"><h1 id="7iv">Hello Plop!</h1></div><div class="bar"><h1 id="7iv">Hello Plip!</h1></div></div>')
+		expect(res).toEqual('<div id="main"><div id="e0x" class="foo"><h1 id="h9y">Hello Plop!</h1></div><div id="ns0" class="bar"><h1 id="r11">Hello Plip!</h1></div></div>')
 	})
 })

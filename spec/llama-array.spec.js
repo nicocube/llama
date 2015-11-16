@@ -21,13 +21,13 @@ describe("array manipulation", function() {
 		template = t.div({$:'main', _:'content'},
 			t.h1("Hello ", $name(), "!"),
 			t.ul($arr.each(
-				t.li('plip:', $arr._v())
+				t.li('plip ', $arr._i(), ': ', $arr._v())
 			))
 		)
 		var cbCalled = 0
 		var expected = [
-			{id : 'kiz', content: 'plip:42'},
-			{id : 'xj3', content: 'plip: with love from Russia'}
+			{id : 'kiz', content: 'plip 0: 42'},
+			{id : 'xj3', content: 'plip 2: with love from Russia'}
 		]
 		
 		template.listen(function(id, content, action) {
@@ -41,19 +41,19 @@ describe("array manipulation", function() {
 
 		var res = template.render()
 		
-		expect(res).toEqual('<div id="main" class="content"><h1 id="7iv">Hello Plop!</h1><ul id="arw"><li id="kiz">plip:1</li><li id="r11">plip:2</li><li id="xj3">plip:3</li></ul></div>')
+		expect(res).toEqual('<div id="main" class="content"><h1 id="7iv">Hello Plop!</h1><ul id="arw"><li id="kiz">plip 0: 1</li><li id="r11">plip 1: 2</li><li id="xj3">plip 2: 3</li></ul></div>')
 		
 		$arr.setValue(0, 42)
 		
 		res = template.render()
 		
-		expect(res).toEqual('<div id="main" class="content"><h1 id="7iv">Hello Plop!</h1><ul id="arw"><li id="kiz">plip:42</li><li id="r11">plip:2</li><li id="xj3">plip:3</li></ul></div>')
+		expect(res).toEqual('<div id="main" class="content"><h1 id="7iv">Hello Plop!</h1><ul id="arw"><li id="kiz">plip 0: 42</li><li id="r11">plip 1: 2</li><li id="xj3">plip 2: 3</li></ul></div>')
 		
-		$arr.setValue(2, " with love from Russia")
+		$arr.setValue(2, 'with love from Russia')
 		
 		res = template.render()
 		
-		expect(res).toEqual('<div id="main" class="content"><h1 id="7iv">Hello Plop!</h1><ul id="arw"><li id="kiz">plip:42</li><li id="r11">plip:2</li><li id="xj3">plip: with love from Russia</li></ul></div>')
+		expect(res).toEqual('<div id="main" class="content"><h1 id="7iv">Hello Plop!</h1><ul id="arw"><li id="kiz">plip 0: 42</li><li id="r11">plip 1: 2</li><li id="xj3">plip 2: with love from Russia</li></ul></div>')
 		
 		expect(cbCalled).toEqual(2, "Listener has to be called twice and only twice.")
 	})
