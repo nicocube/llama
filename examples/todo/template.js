@@ -20,14 +20,14 @@ module.exports = function (t) {
 						t.div({_:'view'},
 							t.input({_:'toggle', type:'checkbox', checked:true}),
 							t.label('Taste JavaScript'),
-							t.button({_:'destroy'})
+							t.button({_:'destroy'},'x')
 						)
 					),
 					t.li(
 						t.div({_:'view'},
 							t.input({_:'toggle', type:'checkbox'}),
 							t.label('Buy a unicorn'),
-							t.button({_:'destroy'})
+							t.button({_:'destroy'},'x')
 						)
 					)
 				),
