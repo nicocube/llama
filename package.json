@@ -1,33 +1,36 @@
 {
-  "author": "Nicolas Lochet",
   "name": "llama",
-  "description": "Wooly, sure-footed, your next tool for SPA development.",
   "version": "0.2.7",
+  "description": "Wooley, sure-footed, a tool for static site generation.",
   "homepage": "https://github.com/nicocube/llama",
+  "author": "Nicolas Lochet <nicolas.lochet@gmail.com>",
+  "license": "Apache-2.0",
   "repository": {
     "type": "git",
     "url": "git://github.com/nicocube/llama.git"
   },
-  "main": "lib/llama.js",
+  "main": "index.js",
+  "bin": "cli.js",
   "scripts": {
     "pretest": "npm run lint",
-    "test": "jasmine-node spec/",
-    "autotest": "nodemon -x 'npm test'",
-    "coverage": "istanbul cover jasmine-node spec/",
-    "bench": "node bench/generate_n_times.js",
-    "lint": "eslint lib/*",
-    "autolint": "nodemon -x eslint lib/*"
-  },
-  "engines": {
-    "node": "^0.12.0"
+    "test": "tape test/**/*.spec.js |tap-summary --no-progress",
+    "autotest": "nodemon -e js,yml -x 'tape test/**/*.spec.js |tap-summary --no-progress'",
+    "autolinttest": "nodemon -e js,yml -x 'npm run lint && tape test/**/*.spec.js |tap-summary --no-progress'",
+    "coverage": "nyc tape test/**/*.spec.js && nyc report --reporter=html",
+    "lint": "eslint index.js test/",
+    "autolint": "nodemon -x eslint index.js lib/ test/"
   },
   "dependencies": {
-    "mlf": "^0.1.0"
+    "bunyan": "^1.8.12",
+    "markdown-it": "^8.4.2",
+    "yargs": "^12.0.1"
   },
   "devDependencies": {
-    "eslint": "^4.19.1",
-    "istanbul": "^0.4.5",
-    "jasmine-node": "^2.0.0"
+    "eslint": "^5.3.0",
+    "nodemon": "^1.18.3",
+    "nyc": "^12.0.2",
+    "tap-summary": "^4.0.0",
+    "tape": "^4.9.1"
   },
   "optionalDependencies": {}
 }
