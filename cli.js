@@ -60,6 +60,8 @@ argv
 function buildIndex(folder) {
   console.log(folder)
   if (fs.statSync(folder).isDirectory()) {
+    let dir = fs.readdirSync(folder)
+    dir.forEach(d => console.log(' ' + d))
   }
 }
 
