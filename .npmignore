@@ -1,5 +1,6 @@
 .git*
-spec
-coverage
-bench
-examples
+test/
+examples/
+coverage/
+.nyc_output/
+.eslintrc
