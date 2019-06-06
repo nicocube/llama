@@ -17,20 +17,20 @@
     "autotest": "nodemon -e js,yml -x 'tape test/**/*.spec.js |tap-summary --no-progress'",
     "autolinttest": "nodemon -e js,yml -x 'npm run lint && tape test/**/*.spec.js |tap-summary --no-progress'",
     "coverage": "nyc tape test/**/*.spec.js && nyc report --reporter=html",
-    "lint": "eslint index.js test/",
-    "autolint": "nodemon -x eslint index.js lib/ test/"
+    "lint": "eslint cli.js test/",
+    "autolint": "nodemon -x eslint cli.js lib/ test/"
   },
   "dependencies": {
     "bunyan": "^1.8.12",
     "markdown-it": "^8.4.2",
-    "yargs": "^12.0.5"
+    "yargs": "^13.2.4"
   },
   "devDependencies": {
-    "eslint": "^5.15.3",
-    "nodemon": "^1.18.10",
-    "nyc": "^13.3.0",
+    "eslint": "^5.16.0",
+    "nodemon": "^1.19.1",
+    "nyc": "^14.1.1",
     "tap-summary": "^4.0.0",
-    "tape": "^4.10.1"
+    "tape": "^4.10.2"
   },
   "optionalDependencies": {}
 }
