@@ -22,7 +22,7 @@
   },
   "dependencies": {
     "bunyan": "^1.8.12",
-    "markdown-it": "^10.0.0",
+    "markdown-it": "^12.3.2",
     "yargs": "^15.1.0"
   },
   "devDependencies": {
