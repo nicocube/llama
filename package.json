@@ -2,6 +2,8 @@
   "name": "llama",
   "version": "0.2.7",
   "description": "Wooley, sure-footed, a tool for static site generation.",
+  "main": "index.js",
+  "type": "module",
   "homepage": "https://github.com/nicocube/llama",
   "author": "Nicolas Lochet <nicolas.lochet@gmail.com>",
   "license": "Apache-2.0",
@@ -9,28 +11,23 @@
     "type": "git",
     "url": "git://github.com/nicocube/llama.git"
   },
-  "main": "index.js",
-  "bin": "cli.js",
   "scripts": {
     "pretest": "npm run lint",
+    "lint": "eslint *.js test",
+    "lint:watch": "nodemon -x 'npm run lint'",
     "test": "tape test/**/*.spec.js |tap-summary --no-progress",
-    "autotest": "nodemon -e js,yml -x 'tape test/**/*.spec.js |tap-summary --no-progress'",
-    "autolinttest": "nodemon -e js,yml -x 'npm run lint && tape test/**/*.spec.js |tap-summary --no-progress'",
-    "coverage": "nyc tape test/**/*.spec.js && nyc report --reporter=html",
-    "lint": "eslint cli.js test/",
-    "autolint": "nodemon -x eslint cli.js lib/ test/"
-  },
-  "dependencies": {
-    "bunyan": "^1.8.12",
-    "markdown-it": "^10.0.0",
-    "yargs": "^15.1.0"
+    "test:watch": "nodemon -x 'npm run test'",
+    "coverage": "c8 tape test/**/*.spec.js && c8 report --reporter=html",
+    "preversion": "npm test && npm outdated && npm audit"
   },
   "devDependencies": {
-    "eslint": "^6.8.0",
-    "nodemon": "^2.0.2",
-    "nyc": "^15.0.0",
-    "tap-summary": "^4.0.0",
-    "tape": "^4.13.2"
-  },
-  "optionalDependencies": {}
+    "c8": "^7.10.0",
+    "eslint": "^8.4.1",
+    "eslint-plugin-import": "^2.25.4",
+    "eslint-plugin-jsdoc": "^37.8.2",
+    "nodemon": "^2.0.15",
+    "tap-summary": "git+ssh://git@github.com/nicocube/tap-summary.git",
+    "tape": "^5.3.2",
+    "tape-async": "^2.3.0"
+  }
 }
