@@ -10,7 +10,7 @@
  */
 
 // eslint-disable-next-line no-unused-vars
-import EventBus, { Events } from './event-bus.js'
+import EventBus from './event-bus.js'
 
 const pathRx = /\/(?:(?::([0-9A-Za-z.+-]+))|([0-9A-Za-z.+-]+))/g
 const urlRx = /\/([0-9A-Za-z.+-]+)/g
@@ -73,6 +73,8 @@ export class Parsed {
 }
 
 export default class Router {
+  static GO = 'router-go'
+
   /**
    *
    * @param {EventBus} evenBus
@@ -96,7 +98,7 @@ export default class Router {
   run() {
     window.addEventListener('hashchange', () => this.route())
     window.addEventListener('load', () => this.route())
-    this.evenBus.on('router', Events.ROUTER_GO, (path) => {
+    this.evenBus.on('router', Router.GO, (path) => {
       this.go(path)
     })
   }
