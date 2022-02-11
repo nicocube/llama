@@ -1,6 +1,6 @@
 {
   "name": "llama",
-  "version": "0.2.7",
+  "version": "1.0.0",
   "description": "Wooley, sure-footed, a tool for static site generation.",
   "main": "index.js",
   "type": "module",
