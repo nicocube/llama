@@ -98,22 +98,12 @@ export default class Component {
 
 }
 
-export class Context {
-  constructor(keys) {
-    this.keys = keys
-  }
-  provide(where) {
-    return this.keys[where]
-  }
-}
-
 export class ContextComponent extends Component {
-  constructor(eventBus, context, where) {
+  constructor(eventBus, context) {
     super(eventBus)
     this.context = context
-    this.where = where
   }
   data() {
-    return this.context.provide(this.where)
+    return this.context
   }
 }

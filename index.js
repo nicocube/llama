@@ -9,12 +9,12 @@
  * See the License for the specific language governing permissions and limitations under the License.
  */
 
-import Component, { Context, ContextComponent } from './component.js'
+import Component, { ContextComponent } from './component.js'
 import EventBus from './event-bus.js'
 import Router from './router.js'
 
 export {
-  Component, EventBus, Router, Context, ContextComponent
+  Component, EventBus, Router, ContextComponent
 }
 
 export default class AppView {
