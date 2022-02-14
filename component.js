@@ -51,7 +51,11 @@ export default class Component {
    * @returns {DocumentFragment}
    */
   getHtmlFragment() {
-    return this.fragmentFromHtml(this.html)
+    if (typeof this.html === 'string') {
+      return this.fragmentFromHtml(this.html)
+    } else if (typeof this.html === 'function') {
+      return this.fragmentFromHtml(this.html(this.i18n))
+    }
   }
 
   /**
