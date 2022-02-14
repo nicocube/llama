@@ -54,7 +54,7 @@ export default class Component {
     if (typeof this.html === 'string') {
       return this.fragmentFromHtml(this.html)
     } else if (typeof this.html === 'function') {
-      return this.fragmentFromHtml(this.html(this.i18n))
+      return this.fragmentFromHtml(this.html(this.data()))
     }
   }
 
@@ -96,4 +96,24 @@ export default class Component {
     this.gId(id).addEventListener(evt, cb)
   }
 
+}
+
+export class Context {
+  constructor(keys) {
+    this.keys = keys
+  }
+  provide(where) {
+    return this.keys[where]
+  }
+}
+
+export class ContextComponent extends Component {
+  constructor(eventBus, context, where) {
+    super(eventBus)
+    this.context = context
+    this.where = where
+  }
+  data() {
+    return this.context.provide(this.where)
+  }
 }
