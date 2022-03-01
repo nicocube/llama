@@ -27,7 +27,12 @@ export default class AppView {
   constructor(appBox, eventBus) {
     this.appBox = appBox
     // FIXME action in a constructor
-    if (!this.appBox.shadowRoot) this.appBox.attachShadow({ mode: 'open' })
+    if (!this.appBox.shadowRoot) {
+      this.appBox.attachShadow({ mode: 'open' })
+      while (this.appBox.hasChildNodes()) {
+        this.appBox.shadowRoot.appendChild(this.appBox.firstChild)
+      }
+    }
     this.eventBus = eventBus
     this.component = undefined
   }
