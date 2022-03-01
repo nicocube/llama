@@ -125,8 +125,8 @@ export default class Router {
     if (typeof parsed === 'undefined' && ('unknown' in this.actions)) {
       this.actions['unknown'](parsed.params)
     } else {
-      if (this.before_action) this.before_action(parsed)
-      this.actions[parsed.path](parsed.params)
+      if (this.before_action) await this.before_action(parsed)
+      await this.actions[parsed.path](parsed.params)
     }
   }
 }

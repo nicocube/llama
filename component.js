@@ -39,29 +39,45 @@ export default class Component {
     return fragment
   }
 
+  /**
+   * @returns {boolean}
+   */
+  hasContent() {
+    return (typeof this.css !== 'undefined') && (typeof this.html !== 'undefined')
+  }
+
+  /**
+   * @param {ShadowRoot} shadowRoot
+   */
   injectCSS(shadowRoot) {
     if (this.css) {
       const style = document.createElement('style')
       style.textContent = this.css
       shadowRoot.appendChild(style)
+    } else {
+      console.warn(`${this.constructor.name}: no css injected`)
     }
   }
 
   /**
-   * @returns {DocumentFragment}
+   * @param {ShadowRoot} shadowRoot
    */
-  getHtmlFragment() {
-    if (typeof this.html === 'string') {
-      return this.fragmentFromHtml(this.html)
-    } else if (typeof this.html === 'function') {
-      return this.fragmentFromHtml(this.html(this.data()))
+  injectHTML(shadowRoot) {
+    if (this.html) {
+      if (typeof this.html === 'string') {
+        shadowRoot.appendChild(this.fragmentFromHtml(this.html))
+      } else if (typeof this.html === 'function') {
+        shadowRoot.appendChild(this.fragmentFromHtml(this.html(this.data())))
+      }
+    } else {
+      console.warn(`${this.constructor.name}: no html injected`)
     }
   }
 
   /**
    * @param {HTMLElement} box
    */
-  setParent(box) {
+  setBox(box) {
     this.box = box
   }
 

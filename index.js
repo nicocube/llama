@@ -38,12 +38,13 @@ export default class AppView {
    * @param {Component} component
    */
   load(component) {
-    this.clear()
-    const fragment = component.getHtmlFragment()
-      , { shadowRoot } = this.appBox
-    component.injectCSS(shadowRoot)
-    shadowRoot.appendChild(fragment)
-    component.setParent(shadowRoot)
+    const { shadowRoot } = this.appBox
+    if (component.hasContent()) {
+      this.clear()
+      component.injectCSS(shadowRoot)
+      component.injectHTML(shadowRoot)
+    }
+    component.setBox(shadowRoot)
     component.init()
     this.component = component
   }
