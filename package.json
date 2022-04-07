@@ -24,7 +24,7 @@
     "c8": "^7.10.0",
     "eslint": "^8.9.0",
     "eslint-plugin-import": "^2.25.4",
-    "eslint-plugin-jsdoc": "^37.9.1",
+    "eslint-plugin-jsdoc": "^38.1.6",
     "nodemon": "^2.0.15",
     "tap-summary": "git+ssh://git@github.com/nicocube/tap-summary.git",
     "tape": "^5.5.2",
