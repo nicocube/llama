@@ -44,7 +44,7 @@ export default class AppView {
    */
   load(component) {
     const { shadowRoot } = this.appBox
-    if (component.hasContent()) {
+    if (component.hasHTML()) {
       this.clear()
       component.injectCSS(shadowRoot)
       component.injectHTML(shadowRoot)

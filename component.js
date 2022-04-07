@@ -42,8 +42,9 @@ export default class Component {
   /**
    * @returns {boolean}
    */
-  hasContent() {
-    return (typeof this.css !== 'undefined') && (typeof this.html !== 'undefined')
+  hasHTML() {
+    console.log(`${this.constructor.name}: has HTML? ${typeof this.html !== 'undefined'}`)
+    return (typeof this.html !== 'undefined')
   }
 
   /**
@@ -53,9 +54,10 @@ export default class Component {
     if (this.css) {
       const style = document.createElement('style')
       style.textContent = this.css
+      console.warn(`${this.constructor.name}: inject CSS`)
       shadowRoot.appendChild(style)
     } else {
-      console.warn(`${this.constructor.name}: no css injected`)
+      console.warn(`${this.constructor.name}: no CSS injected`)
     }
   }
 
@@ -64,13 +66,14 @@ export default class Component {
    */
   injectHTML(shadowRoot) {
     if (this.html) {
+      console.warn(`${this.constructor.name}: inject HTML (format:${typeof this.html})`)
       if (typeof this.html === 'string') {
         shadowRoot.appendChild(this.fragmentFromHtml(this.html))
       } else if (typeof this.html === 'function') {
         shadowRoot.appendChild(this.fragmentFromHtml(this.html(this.data())))
       }
     } else {
-      console.warn(`${this.constructor.name}: no html injected`)
+      console.warn(`${this.constructor.name}: no HTML injected`)
     }
   }
 
