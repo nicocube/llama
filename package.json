@@ -22,12 +22,12 @@
   },
   "devDependencies": {
     "c8": "^7.10.0",
-    "eslint": "^8.9.0",
+    "eslint": "^8.13.0",
     "eslint-plugin-import": "^2.25.4",
-    "eslint-plugin-jsdoc": "^38.1.6",
+    "eslint-plugin-jsdoc": "^39.2.1",
     "nodemon": "^2.0.15",
     "tap-summary": "git+ssh://git@github.com/nicocube/tap-summary.git",
-    "tape": "^5.5.2",
+    "tape": "^5.5.3",
     "tape-async": "^2.3.0"
   }
 }
