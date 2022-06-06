@@ -9,12 +9,12 @@
  * See the License for the specific language governing permissions and limitations under the License.
  */
 
-import Component, { ContextComponent } from './component.js'
+import Component from './component.js'
 import EventBus from './event-bus.js'
 import Router from './router.js'
 
 export {
-  Component, EventBus, Router, ContextComponent
+  Component, EventBus, Router
 }
 
 export default class AppView {
@@ -38,19 +38,26 @@ export default class AppView {
   }
 
   /**
-   * Clean the app box and load new component inside
+   * load component inside the app box
    *
    * @param {Component} component
    */
   load(component) {
     const { shadowRoot } = this.appBox
+
+    // fill box with HTML if necessary
     if (component.hasHTML()) {
       this.clear()
       component.injectCSS(shadowRoot)
       component.injectHTML(shadowRoot)
     }
+
+    // clean previous component
+    this.component?.clean()
+
     component.setBox(shadowRoot)
     component.init()
+    // set new component as current
     this.component = component
   }
 
@@ -62,6 +69,5 @@ export default class AppView {
     while (shadowRoot.hasChildNodes()) {
       shadowRoot.removeChild(shadowRoot.firstChild)
     }
-    this.component?.clean()
   }
 }

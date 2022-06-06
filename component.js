@@ -13,15 +13,33 @@
 // eslint-disable-next-line no-unused-vars
 import EventBus from './event-bus.js'
 
+
 export default class Component {
   /**
    * Common ground for vanilla Widget Component
    *
+   * @param {string} name name of the component to serve as source for event listeners
    * @param {EventBus} eventBus to receive and send events
    */
-  constructor(eventBus) {
+  constructor(name, eventBus) {
+    this.name = name
     this.eventBus = eventBus
-    this.box = null
+    /**
+     * @property {ShadowRoot|undefined} box
+     */
+    this.box = undefined
+    /**
+     * @property {string|function|undefined} html
+     */
+    this.html = undefined
+    /**
+     * @property {string|undefined} css
+     */
+    this.css = undefined
+    /**
+     * @property {Object.<string,any>|undefined} context
+     */
+    this.context = undefined
   }
 
   /**
@@ -70,7 +88,7 @@ export default class Component {
       if (typeof this.html === 'string') {
         shadowRoot.appendChild(this.fragmentFromHtml(this.html))
       } else if (typeof this.html === 'function') {
-        shadowRoot.appendChild(this.fragmentFromHtml(this.html(this.data())))
+        shadowRoot.appendChild(this.fragmentFromHtml(this.html(this.context ? this.context : undefined)))
       }
     } else {
       console.warn(`${this.constructor.name}: no HTML injected`)
@@ -78,7 +96,7 @@ export default class Component {
   }
 
   /**
-   * @param {HTMLElement} box
+   * @param {ShadowRoot} box
    */
   setBox(box) {
     this.box = box
@@ -95,7 +113,26 @@ export default class Component {
    * clear the component after removing from DOM
    */
   clean() {
-    // TODO empty impl to avoid runtime error, could be better
+    // remove the listeners of this component in the eventBus
+    this.eventBus.clear(this.name)
+  }
+
+  /**
+   * Attach an event listener for this source component
+   * @param {string|string[]} e the event(s) key(s) to attach the listener
+   * @param {(...r) => {}} f the listener function
+   */
+  on(e, f) {
+    this.eventBus.on(this.name, e, f)
+  }
+
+  /**
+   * Emit an event for a given key that are sent to every attached events listeners
+   * @param {string} k the event key
+   * @param  {...any} p the optional params
+   */
+  emit(k, ...p) {
+    this.eventBus.emit(k, ...p)
   }
 
   /**
@@ -115,14 +152,4 @@ export default class Component {
     this.gId(id).addEventListener(evt, cb)
   }
 
-}
-
-export class ContextComponent extends Component {
-  constructor(eventBus, context) {
-    super(eventBus)
-    this.context = context
-  }
-  data() {
-    return this.context
-  }
 }

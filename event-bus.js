@@ -15,7 +15,13 @@ export default class EventBus {
     this.excludeFromLog = ('excludeFromLog' in options) ? options.excludeFromLog : []
   }
 
-  on(t, e, f) {
+  /**
+   * Attach an event listener for a source
+   * @param {string} n name of the source of the listener
+   * @param {string|string[]} e the event(s) key(s) to attach the listener
+   * @param {(...r) => {}} f the listener function
+   */
+  on(n, e, f) {
     const l = (e instanceof Array) ? e : [e]
     l.forEach((k) => {
       let s = this._.get(k)
@@ -23,10 +29,15 @@ export default class EventBus {
         s = {}
         this._.set(k, s)
       }
-      s[t] = f
+      s[n] = f
     })
   }
 
+  /**
+   * Emit an event for a given key that are sent to every attached events listeners
+   * @param {string} k the event key
+   * @param  {...any} p the optional params
+   */
   emit(k, ...p) {
     if (!this.excludeFromLog.includes(k)) console.log(k, ...p)
     setTimeout(() => {
@@ -39,9 +50,13 @@ export default class EventBus {
     }, 1)
   }
 
-  clear(t) {
+  /**
+   * Clear event listeners for a source
+   * @param {string} n the name of the source to clear events for
+   */
+  clear(n) {
     for (const s of this._.values()) {
-      if (t in s) delete s[t]
+      if (n in s) delete s[n]
     }
   }
 }
