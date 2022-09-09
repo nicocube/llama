@@ -16,18 +16,18 @@
     "lint": "eslint *.js test",
     "lint:watch": "nodemon -x 'npm run lint'",
     "test": "tape test/**/*.spec.js |tap-summary --no-progress",
-    "test:watch": "nodemon -x 'npm run test'",
+    "test:watch": "nodemon -x 'clear;npm run test'",
     "coverage": "c8 tape test/**/*.spec.js && c8 report --reporter=html",
     "preversion": "npm test && npm outdated && npm audit"
   },
   "devDependencies": {
-    "c8": "^7.10.0",
-    "eslint": "^8.13.0",
-    "eslint-plugin-import": "^2.25.4",
-    "eslint-plugin-jsdoc": "^39.2.1",
-    "nodemon": "^2.0.15",
-    "tap-summary": "git+ssh://git@github.com/nicocube/tap-summary.git",
-    "tape": "^5.5.3",
+    "@freecube/tap-summary": "^4.0.4",
+    "c8": "^7.12.0",
+    "eslint": "^8.23.0",
+    "eslint-plugin-import": "^2.26.0",
+    "eslint-plugin-jsdoc": "^39.3.6",
+    "nodemon": "^2.0.19",
+    "tape": "^5.6.0",
     "tape-async": "^2.3.0"
   }
 }
