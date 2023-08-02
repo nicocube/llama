@@ -74,6 +74,8 @@ export class Parsed {
 
 export default class Router {
   static GO = 'router-go'
+  static LAND = 'router-land'
+  static NOT_FOUND = 'router-notfound'
 
   /**
    *
@@ -98,7 +100,7 @@ export default class Router {
   run() {
     window.addEventListener('hashchange', () => this.route())
     window.addEventListener('load', () => this.route())
-    this.evenBus.on('router', Router.GO, (path) => {
+    if (this.evenBus) this.evenBus.on('router', Router.GO, (path) => {
       this.go(path)
     })
   }
@@ -109,6 +111,7 @@ export default class Router {
 
   async route() {
     const path = window.location.hash || '/'
+
 
     const url_parts = []
     let parts
@@ -122,10 +125,13 @@ export default class Router {
       if (parsed) break
     }
 
-    if (typeof parsed === 'undefined' && ('unknown' in this.actions)) {
-      this.actions['unknown'](parsed.params)
+    if (typeof parsed === 'undefined' && (Router.NOT_FOUND in this.actions)) {
+      if (this.evenBus) this.evenBus.emit(Router.LAND, Router.NOT_FOUND, parsed.params)
+      this.actions[Router.NOT_FOUND](parsed.params)
     } else {
+      if (this.evenBus) this.evenBus.emit(Router.LAND, parsed.path, parsed.params)
       if (this.before_action) await this.before_action(parsed)
+
       await this.actions[parsed.path](parsed.params)
     }
   }
