@@ -11,66 +11,80 @@
 
 'use strict'
 
-import test from 'tape-async'
+import test from 'tape'
 
 import Router, { Path, Param, Parsed } from '../router.js'
 
 test('Path.build', async (t) => {
-  t.deepEqual(Path.build('/'), new Path('/', []))
-  t.deepEqual(Path.build('/plop/:id'), new Path('/plop/:id', ['plop', new Param('id')]))
-  t.deepEqual(Path.build('/:foo/:bar'), new Path('/:foo/:bar', [new Param('foo'), new Param('bar')]))
-  t.deepEqual(Path.build('/test/:id/re/:mid'), new Path('/test/:id/re/:mid', ['test', new Param('id'), 're', new Param('mid')]))
-  t.deepEqual(Path.build('/xxx/:aid/:bid'), new Path('/xxx/:aid/:bid', ['xxx', new Param('aid'), new Param('bid')]))
-  t.plan(5)
-  t.end()
+  try {
+    t.deepEqual(Path.build('/'), new Path('/', []))
+    t.deepEqual(Path.build('/plop/:id'), new Path('/plop/:id', ['plop', new Param('id')]))
+    t.deepEqual(Path.build('/:foo/:bar'), new Path('/:foo/:bar', [new Param('foo'), new Param('bar')]))
+    t.deepEqual(Path.build('/test/:id/re/:mid'), new Path('/test/:id/re/:mid', ['test', new Param('id'), 're', new Param('mid')]))
+    t.deepEqual(Path.build('/xxx/:aid/:bid'), new Path('/xxx/:aid/:bid', ['xxx', new Param('aid'), new Param('bid')]))
+  } catch (e) {
+    t.fail(e.stack)
+  } finally {
+    t.plan(5)
+    t.end()
+  }
 })
 
 test('path.check', async (t) => {
-  const path = Path.build('/plop/:id')
+  try {
+    const path = Path.build('/plop/:id')
 
-  t.deepEqual(path.check(['plop', '42']), new Parsed('/plop/:id', { 'id': '42' }))
-  t.deepEqual(path.check(['test', 'test']), undefined)
-
-  t.plan(2)
-  t.end()
+    t.deepEqual(path.check(['plop', '42']), new Parsed('/plop/:id', { 'id': '42' }))
+    t.deepEqual(path.check(['test', 'test']), undefined)
+  } catch (e) {
+    t.fail(e.stack)
+  } finally {
+    t.plan(2)
+    t.end()
+  }
 })
 
 test('Router.route', async (t) => {
-  const router = new Router()
-  let count = 0
+  try {
+    const router = new Router()
+    let count = 0
 
-  router.on('/', () => {
-    t.deepEqual(count, 0)
-    t.ok(true)
-    count++
-  })
+    router.on('/', () => {
+      t.deepEqual(count, 0)
+      t.ok(true)
+      count++
+    })
 
-  router.on('/home', () => {
-    t.deepEqual(count, 1)
-    t.ok(true)
-    count++
-  })
+    router.on('/home', () => {
+      t.deepEqual(count, 1)
+      t.ok(true)
+      count++
+    })
 
-  router.on('/plop/:id', ({ id }) => {
-    t.deepEqual(count, 2)
-    t.deepEqual(id, '13')
-    count++
-  })
+    router.on('/plop/:id', ({ id }) => {
+      t.deepEqual(count, 2)
+      t.deepEqual(id, '13')
+      count++
+    })
 
-  // must be global to mimic browser behavior
-  // eslint-disable-next-line no-undef
-  global.window = { location: { hash: '/' } }
+    // must be global to mimic browser behavior
+    // eslint-disable-next-line no-undef
+    global.window = { location: { hash: '/' } }
 
-  router.route()
+    await router.route()
 
-  router.go('/home')
-  router.route()
+    router.go('/home')
+    await router.route()
 
-  router.go('/plop/13')
-  router.route()
+    router.go('/plop/13')
+    await router.route()
 
-  t.deepEqual(count, 3)
-  t.plan(7)
-  t.end()
+    t.deepEqual(count, 3)
+  } catch (e) {
+    t.fail(e.stack)
+  } finally {
+    t.plan(7)
+    t.end()
+  }
 })
 

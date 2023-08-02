@@ -17,57 +17,47 @@ export {
   Component, EventBus, Router
 }
 
-export default class AppView {
-  /**
-   * Initialize AppView
-   *
-   * @param {HTMLDivElement} appBox the div we load components in
-   * @param {EventBus} eventBus to receive and send events to receive and send events
-   */
-  constructor(appBox, eventBus) {
-    this.appBox = appBox
-    // FIXME action in a constructor
-    if (!this.appBox.shadowRoot) {
-      this.appBox.attachShadow({ mode: 'open' })
-      while (this.appBox.hasChildNodes()) {
-        this.appBox.shadowRoot.appendChild(this.appBox.firstChild)
-      }
-    }
-    this.eventBus = eventBus
-    this.component = undefined
-  }
+/**
+ * @typedef {Object} RouteTarget
+ * @property {typeof Component} [type]
+ * @property {string} [name] name of the component to serve as source for event listeners
+ * @property {string|(context,...param)=>{}} [html]
+ * @property {string} [css]
+ * @property {(...param)=>{}} [onload]
+ * @property {Console} [logger] define a logger, can be {logger: console} to send on the javascript console
+ */
 
-  /**
-   * load component inside the app box
-   *
-   * @param {Component} component
-   */
-  load(component) {
-    const { shadowRoot } = this.appBox
+/**
+ * Set all the Llama goodness together
+ *
+ * @param {Object} options
+ * @param {HTMLDivElement} options.box the div we load components in
+ * @param {EventBus} [options.eventBus]
+ * @param {Object} options.context
+ * @param {Object.<string, typeof Component|RouteTarget>} options.routes
+ * @property {Console} [options.logger] define a logger, can be {logger: console} to send on the javascript console
+ */
+export default function llama(options) {
+  const box = Component.prepare(options.box)
+    , eventBus = options?.eventBus || new EventBus()
+    , context = options.context
 
-    // fill box with HTML if necessary
-    if (component.hasHTML()) {
-      this.clear()
-      component.injectCSS(shadowRoot)
-      component.injectHTML(shadowRoot)
-    }
+  const router = new Router(eventBus)
 
-    // clean previous component
-    this.component?.clean()
-
-    component.setBox(shadowRoot)
-    component.init()
-    // set new component as current
-    this.component = component
-  }
-
-  /**
-   * Clear the app box
-   */
-  clear() {
-    const { shadowRoot } = this.appBox
-    while (shadowRoot.hasChildNodes()) {
-      shadowRoot.removeChild(shadowRoot.firstChild)
+  for (const [path, target] of Object.entries(options.routes)) {
+    if (typeof target === 'object') {
+      const type = target.type || Component
+      const opt = Object.assign({}, target, { box, eventBus, context })
+      if (('logger' in options) && !('logger' in opt)) opt.logger = options.logger
+      const component = new type(opt)
+      router.on(path, (...param) => component.call(...param))
+    } else {
+      const opt = { box, eventBus, context }
+      if (('logger' in options) && !('logger' in opt)) opt.logger = options.logger
+      const component = new target(opt)
+      router.on(path, (...param) => component.call(...param))
     }
   }
+
+  return router
 }
