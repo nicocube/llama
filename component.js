@@ -43,10 +43,10 @@ export default class Component {
     this.parent = true
     this.active = false
     this.on(Component.LOAD)?.before((loadingComponent) => {
-      // if (this.logger) this.logger.debug('before', this.name, this.active, this.parent, loadingComponent !== this)
+      if (this.logger) this.logger.debug('before', this.name, this.active, this.parent, loadingComponent !== this)
       if (this.active && this.parent && loadingComponent !== this) this.unload()
     })?.do((loadingComponent, param) => {
-      // if (this.logger) this.logger.debug('do', this.name, loadingComponent === this)
+      if (this.logger) this.logger.debug('do', this.name, loadingComponent === this)
       if (loadingComponent === this) this.load(param)
     })
   }
@@ -77,7 +77,7 @@ export default class Component {
 
   /**
    * Load component inside the box
-   * 
+   *
    * @param {...any} param
    */
   load(param) {
@@ -131,7 +131,6 @@ export default class Component {
     // eslint-disable-next-line no-param-reassign
     if (children.length === 0) children = this.children
     children.forEach((child) => {
-      child.empty(child.box)
       child.clean()
       const idx = this.children.indexOf(child)
       if (idx !== -1) {
@@ -152,9 +151,10 @@ export default class Component {
    */
   clean() {
     // remove the listeners of this component in the eventBus
-    this.eventBus?.clear(this.name)
+    this.eventBus?.clear(this.name, (k) => k !== Component.LOAD)
     // clean the children
     this.removeChildren()
+    this.empty()
   }
 
   /**

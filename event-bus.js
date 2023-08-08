@@ -67,10 +67,11 @@ export class SimpleEventBus {
   /**
    * Clear event listeners for a source
    * @param {string} s the name of the source to clear events for
+   * @param {(k:string)=> boolean} [filter] filter the keys that should be cleared (return true for keys to be cleared)
    */
-  clear(s) {
+  clear(s, filter = () => true) {
     if (this.logger && (!this.logger?.logFor || this.logger?.logFor('clear'))) this.logger.debug(`EventBus.clear<${this.name}>: %s`, s)
-    for (const d of this._hook.values()) { if (s in d) delete d[s] }
+    for (const [k, d] of this._hook.entries()) { if ((s in d) && filter(k)) delete d[s] }
   }
 }
 
@@ -134,12 +135,13 @@ export class SequenceEventBus {
   /**
    * Clear event listeners for a source
    * @param {string} s the name of the source to clear events for
+   * @param {(k:string)=> boolean} [filter] filter the keys that should be cleared (return true for keys to be cleared)
    */
-  clear(s) {
+  clear(s, filter = () => true) {
     if (this.logger && (!this.logger?.logFor || this.logger?.logFor('clear'))) this.logger.debug('EventBus.clear: %s', s)
-    this._before.clear(s)
-    this._emit.clear(s)
-    this._after.clear(s)
+    this._before.clear(s, filter)
+    this._emit.clear(s, filter)
+    this._after.clear(s, filter)
   }
 }
 
