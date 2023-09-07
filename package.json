@@ -16,7 +16,7 @@
     "lint": "eslint *.js test",
     "lint:watch": "nodemon -x 'npm run lint'",
     "test": "tape test/**/*.spec.js |tap-summary --no-progress",
-    "test:watch": "nodemon -x 'clear;npm run test'",
+    "test:watch": "nodemon -x 'clear; npm run test'",
     "coverage": "c8 tape test/**/*.spec.js && c8 report --reporter=html",
     "preversion": "npm test && npm outdated && npm audit"
   },
