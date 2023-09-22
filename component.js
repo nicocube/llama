@@ -40,11 +40,11 @@ export default class Component {
     this.logger = options?.logger
     this.onload = options?.onload
     this.children = []
-    this.parent = true
+    this.parent = undefined
     this.active = false
     this.on(Component.LOAD)?.before((loadingComponent) => {
       if (this.logger) this.logger.debug('before', this.name, this.active, this.parent, loadingComponent !== this)
-      if (this.active && this.parent && loadingComponent !== this) this.unload()
+      if (this.active && !this.parent && loadingComponent !== this) this.unload()
     })?.do((loadingComponent, param) => {
       if (this.logger) this.logger.debug('do', this.name, loadingComponent === this)
       if (loadingComponent === this) this.load(param)
@@ -80,7 +80,7 @@ export default class Component {
    *
    * @param {...any} param
    */
-  load(param) {
+  load(param = []) {
     if (this.logger) this.logger.debug(`${this.name}.load(`, ...param, ')')
     this.active = true
     // fill with HTML and CSS (if exists)
@@ -117,7 +117,7 @@ export default class Component {
     children.forEach((child) => {
       this.children.push(child)
       if (this.logger) this.logger.debug(`${this.name}: ${child.name}.init()`)
-      child.parent = false
+      child.parent = this
       child.init()
     })
   }
@@ -180,7 +180,8 @@ export default class Component {
    * @returns {HTMLElement}
    */
   gId(id) {
-    return this.box?.getElementById(id)
+    if (this.parent) return this.parent.gId(id)
+    else return this.box?.getElementById(id)
   }
 
   /**

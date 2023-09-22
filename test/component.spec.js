@@ -126,3 +126,42 @@ test('Component.injectHTML function', async (t) => {
   }
 })
 
+test('Component.injectHTML string + set children to zone + gId', async (t) => {
+  try {
+    const dom = new JSDOM('<!DOCTYPE html><div id="app"></div>')
+
+    // eslint-disable-next-line no-undef
+    global.document = dom.window.document
+
+    const component = new Component({
+      html: `<div>
+  <div id="child00"><div id="in-child">HERE</div></div>
+  <div id="child01"></div></div>
+</div>`,
+      box: Component.prepare(document.getElementById('app')),
+      context: {}
+    })
+
+    component.load()
+
+    const child = new Component({
+      box: component.gId('child00')
+    })
+
+    component.addChildren(
+      child,
+      new Component({
+        box: component.gId('child01')
+      })
+    )
+
+    const inChild = child.gId('in-child')
+
+    t.deepEqual(inChild.innerHTML, 'HERE')
+  } catch (e) {
+    t.fail(e.stack)
+  } finally {
+    t.plan(1)
+    t.end()
+  }
+})
