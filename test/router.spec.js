@@ -49,6 +49,10 @@ test('Router.route', async (t) => {
     const router = new Router()
     let count = 0
 
+    // must be global to mimic browser behavior
+    // eslint-disable-next-line no-undef
+    global.window = { location: { hash: '/' } }
+
     router.on('/', () => {
       t.deepEqual(count, 0)
       t.ok(true)
@@ -67,10 +71,6 @@ test('Router.route', async (t) => {
       count++
     })
 
-    // must be global to mimic browser behavior
-    // eslint-disable-next-line no-undef
-    global.window = { location: { hash: '/' } }
-
     await router.route()
 
     router.go('/home')
@@ -80,6 +80,11 @@ test('Router.route', async (t) => {
     await router.route()
 
     t.deepEqual(count, 3)
+
+    // clean after usage
+    // eslint-disable-next-line no-undef
+    delete global.window
+
   } catch (e) {
     t.fail(e.stack)
   } finally {

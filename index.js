@@ -35,14 +35,15 @@ export {
  * @param {EventBus} [options.eventBus]
  * @param {Object} options.context
  * @param {Object.<string, typeof Component|RouteTarget>} options.routes
- * @property {Console} [options.logger] define a logger, can be {logger: console} to send on the javascript console
+ * @param {Console} [options.logger] define a logger, can be {logger: console} to send on the javascript console
  */
 export default function llama(options) {
   const box = Component.prepare(options.box)
     , eventBus = options?.eventBus || new EventBus()
     , context = options.context
+    , routeOpt = Object.assign({}, ('logger' in options) ? { logger: options.logger } : {})
 
-  const router = new Router(eventBus)
+  const router = new Router(eventBus, routeOpt)
 
   for (const [path, target] of Object.entries(options.routes)) {
     if (typeof target === 'object') {

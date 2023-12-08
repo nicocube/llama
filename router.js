@@ -38,7 +38,6 @@ export class Path {
     const path_parts = []
     let parts
     while ((parts = pathRx.exec(path)) !== null) {
-      // console.log(parts)
       if (typeof parts[1] !== 'undefined') {
         path_parts.push(new Param(parts[1]))
       } else if (typeof parts[2] !== 'undefined') {
@@ -80,12 +79,18 @@ export default class Router {
   /**
    *
    * @param {EventBus} evenBus
+   * @param {object} [options]
+   * @param {Console} [options.logger] define a logger, can be {logger: console} to send on the javascript console
    */
-  constructor(evenBus) {
+  constructor(evenBus, options) {
+    /**
+     * @property {Path[]} routes
+     */
     this.routes = []
     this.actions = {}
     this.before_action = undefined
     this.evenBus = evenBus
+    this.logger = options?.logger || undefined
   }
 
   before(action) {
@@ -93,16 +98,24 @@ export default class Router {
   }
 
   on(path, action) {
+    if (this.logger) this.logger.log(`router.on(${path})`)
     this.routes.push(Path.build(path))
     this.actions[path] = action
   }
 
   run() {
-    window.addEventListener('hashchange', () => this.route())
-    window.addEventListener('load', () => this.route())
+    if (this.logger) this.logger.log('router.run()')
+    this._route = () => this.route()
+    window.addEventListener('hashchange', this._route)
+    window.addEventListener('load', this._route)
     if (this.evenBus) this.evenBus.on('router', Router.GO, (path) => {
       this.go(path)
     })
+  }
+
+  stop() {
+    window.removeEventListener('hashchange', this._route)
+    window.removeEventListener('load', this._route)
   }
 
   go(path) {
@@ -110,6 +123,7 @@ export default class Router {
   }
 
   async route() {
+    if (this.logger) this.logger.log(`router.route(): ${window.location.hash}`)
     const path = window.location.hash || '/'
 
 
@@ -126,8 +140,8 @@ export default class Router {
     }
 
     if (typeof parsed === 'undefined' && (Router.NOT_FOUND in this.actions)) {
-      if (this.evenBus) this.evenBus.emit(Router.LAND, Router.NOT_FOUND, parsed.params)
-      this.actions[Router.NOT_FOUND](parsed.params)
+      if (this.evenBus) this.evenBus.emit(Router.LAND, Router.NOT_FOUND, { path })
+      this.actions[Router.NOT_FOUND]({ path })
     } else {
       if (this.evenBus) this.evenBus.emit(Router.LAND, parsed.path, parsed.params)
       if (this.before_action) await this.before_action(parsed)
