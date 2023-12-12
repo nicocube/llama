@@ -9,7 +9,7 @@
  * See the License for the specific language governing permissions and limitations under the License.
  */
 
-import Component from './component.js'
+import Component, { HostComponent } from './component.js'
 import EventBus from './event-bus.js'
 import Router from './router.js'
 
@@ -25,6 +25,7 @@ export {
  * @property {string} [css]
  * @property {(...param)=>{}} [onload]
  * @property {Console} [logger] define a logger, can be {logger: console} to send on the javascript console
+ * @property {Object.<string, RouteTarget>} embed embedded route
  */
 
 /**
@@ -38,7 +39,7 @@ export {
  * @param {Console} [options.logger] define a logger, can be {logger: console} to send on the javascript console
  */
 export default function llama(options) {
-  const box = Component.prepare(options.box)
+  const box = options.box || 'app'
     , eventBus = options?.eventBus || new EventBus()
     , context = options.context
     , routeOpt = Object.assign({}, ('logger' in options) ? { logger: options.logger } : {})
@@ -47,18 +48,70 @@ export default function llama(options) {
 
   for (const [path, target] of Object.entries(options.routes)) {
     if (typeof target === 'object') {
-      const type = target.type || Component
+      const type = target.type || (!('embed' in target) ? Component : HostComponent)
       const opt = Object.assign({}, target, { box, eventBus, context })
       if (('logger' in options) && !('logger' in opt)) opt.logger = options.logger
+
+      if (options.logger) options.logger.debug(`adding root component ${path}`)
       const component = new type(opt)
-      router.on(path, (...param) => component.call(...param))
+      if (('embed' in target) && !(component instanceof HostComponent)) throw new Error('llama.host.component.must.be.type.HostComponent')
+
+      router.on(path, component)
+
+      if ('embed' in target) {
+        const subRoute = recBuildEmbedded(path, target.embed, opt)
+        component.setSubRoute(subRoute)
+        for (const p of flattenSubRoute(subRoute)) {
+          router.on(p, component)
+        }
+      }
     } else {
       const opt = { box, eventBus, context }
       if (('logger' in options) && !('logger' in opt)) opt.logger = options.logger
+      if (options.logger) options.logger.debug(`adding root component ${path}`)
       const component = new target(opt)
-      router.on(path, (...param) => component.call(...param))
+      router.on(path, component)
     }
   }
 
   return router
+}
+
+function recBuildEmbedded(path, embed, opt) {
+  const res = {}
+  for (const [p, t] of Object.entries(embed)) {
+
+    if (opt.logger) opt.logger.debug(`adding sub component ${path} + ${p}`)
+    if (typeof t === 'object') {
+      const box = t.box || 'sub'
+        , type = t.type || (!('embed' in t) ? Component : HostComponent)
+        , evenBus = opt.evenBus
+        , context = opt.context
+        , logger = opt.logger || undefined
+        , component = new type(Object.assign({}, t, { box, evenBus, context, logger }))
+
+      if ('embed' in t) {
+        if (!(component instanceof HostComponent)) throw new Error('llama.host.component.must.be.type.HostComponent')
+        const subRoute = recBuildEmbedded(path + p, t.embed, opt)
+        component.setSubRoute(subRoute)
+      }
+
+      res[path + p] = component
+    } else {
+      res[path + p] = new t(opt)
+    }
+
+  }
+  return res
+}
+
+function flattenSubRoute(subRoute, res = []) {
+  for (const [p, t] of Object.entries(subRoute)) {
+    if (!(t instanceof HostComponent)) {
+      res.push(p)
+    } else {
+      flattenSubRoute(t.getSubRoute(), res)
+    }
+  }
+  return res
 }

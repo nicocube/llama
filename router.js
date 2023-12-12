@@ -10,6 +10,8 @@
  */
 
 // eslint-disable-next-line no-unused-vars
+import Component from './component.js'
+// eslint-disable-next-line no-unused-vars
 import EventBus from './event-bus.js'
 
 const pathRx = /\/(?:(?::([0-9A-Za-z.+-]+))|([0-9A-Za-z.+-]+))/g
@@ -69,6 +71,9 @@ export class Parsed {
     this.path = path
     this.params = params
   }
+  toString() {
+    return `Parsed{"${this.path}", ${JSON.stringify(this.params)}}`
+  }
 }
 
 export default class Router {
@@ -97,14 +102,19 @@ export default class Router {
     this.before_action = action
   }
 
+  /**
+   * 
+   * @param {string} path
+   * @param {function|Component} action
+   */
   on(path, action) {
-    if (this.logger) this.logger.log(`router.on(${path})`)
+    if (this.logger) this.logger.debug(`router.on(${path}, ${action.toString()})`)
     this.routes.push(Path.build(path))
     this.actions[path] = action
   }
 
   run() {
-    if (this.logger) this.logger.log('router.run()')
+    if (this.logger) this.logger.debug('router.run()')
     this._route = () => this.route()
     window.addEventListener('hashchange', this._route)
     window.addEventListener('load', this._route)
@@ -123,9 +133,10 @@ export default class Router {
   }
 
   async route() {
-    if (this.logger) this.logger.log(`router.route(): ${window.location.hash}`)
-    const path = window.location.hash || '/'
-
+    if (this.logger) this.logger.debug(`router.route(): ${window.location.hash}`)
+    const path = (window.location.hash.at(0) === '#')
+      ? window.location.hash.substring(1)
+      : window.location.hash || '/'
 
     const url_parts = []
     let parts
@@ -138,15 +149,25 @@ export default class Router {
       parsed = route.check(url_parts)
       if (parsed) break
     }
+    // eslint-disable-next-line prefer-template
+    if (this.logger) this.logger.debug(`router.route() ${parsed ? 'found ' + parsed.toString() : 'not found'}`)
 
-    if (typeof parsed === 'undefined' && (Router.NOT_FOUND in this.actions)) {
+    if (typeof parsed === 'undefined') {
       if (this.evenBus) this.evenBus.emit(Router.LAND, Router.NOT_FOUND, { path })
-      this.actions[Router.NOT_FOUND]({ path })
+      if (Router.NOT_FOUND in this.actions) {
+        const action = this.actions[Router.NOT_FOUND]
+        if (action instanceof Component) await action.call({}, path)
+        else await action({}, path)
+      }
     } else {
-      if (this.evenBus) this.evenBus.emit(Router.LAND, parsed.path, parsed.params)
+      if (this.evenBus) this.evenBus.emit(Router.LAND, parsed.params, parsed.path)
       if (this.before_action) await this.before_action(parsed)
 
-      await this.actions[parsed.path](parsed.params)
+      const action = this.actions[parsed.path]
+      if (this.logger) this.logger.debug(`router.route() action: ${action.name}`)
+
+      if (action instanceof Component) await action.call(parsed.params, parsed.path)
+      else await action(parsed.params, parsed.path)
     }
   }
 }

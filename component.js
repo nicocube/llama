@@ -23,14 +23,15 @@ export default class Component {
    * @param {Object} options a set of option al
    * @param {string} [options.name] name of the component to serve as source for event listeners
    * @param {EventBus} options.eventBus to receive and send events
-   * @param {ShadowRoot} options.box
+   * @param {ShadowRoot|string} options.box
    * @param {string|(context,...param)=>{}} [options.html]
    * @param {string} [options.css]
    * @param {Object.<string,any>} [options.context]
-   * @param {(...param)=>{}} [options.onload]
+   * @param {(param: object, path: string)=>{}} [options.onload]
    * @param {Console} [options.logger] define a logger, can be {logger: console} to send on the javascript console
    */
   constructor(options = {}) {
+    this.id = (Math.random() * 0xFFFFFF << 0).toString(16).padStart(6, '0')
     this.name = options?.name || this.constructor.name
     this.eventBus = options?.eventBus
     this.box = options?.box
@@ -42,53 +43,62 @@ export default class Component {
     this.children = []
     this.parent = undefined
     this.active = false
-    this.on(Component.LOAD)?.before((loadingComponent) => {
-      if (this.logger) this.logger.debug('before', this.name, this.active, this.parent, loadingComponent !== this)
+    if (this.logger) this.logger.debug(`create ${this.name} ${this.id}`)
+    this.on(Component.LOAD)?.before((loadingComponent, params, path) => {
+      if (this.logger) this.logger.debug('before', this.name, this.active, !this.parent, loadingComponent !== this, params, path)
       if (this.active && !this.parent && loadingComponent !== this) this.unload()
-    })?.do((loadingComponent, param) => {
-      if (this.logger) this.logger.debug('do', this.name, loadingComponent === this)
-      if (loadingComponent === this) this.load(param)
+    })?.do((loadingComponent, params, path) => {
+      if (this.logger) this.logger.debug('do', this.name, path, params, loadingComponent === this)
+      if (loadingComponent === this) this.load(params, path)
     })
   }
 
-  /**
-   * Prepare the div element shadowRoot
-   *
-   * @param {HTMLDivElement} box the div we load components in
-   */
-  static prepare(box) {
-    if (!box.shadowRoot) {
-      box.attachShadow({ mode: 'open' })
-      while (box.hasChildNodes()) {
-        box.shadowRoot.appendChild(box.firstChild)
-      }
+  prepareBox() {
+    if (this.logger) this.logger.debug(`prepare box for ${this.name}, ${this.box}`)
+    let res = this.box
+    if (res instanceof window.ShadowRoot) {
+      if (this.logger) this.logger.debug(`${res.innerHTML}`)
+      return res
     }
-    return box.shadowRoot
+    if (typeof res === 'string') {
+      if (this.parent) return this.parent.gId(res)
+      else res = document.getElementById(res)
+    }
+    if (!res.shadowRoot) {
+      res.attachShadow({ mode: 'open' })
+      while (res.hasChildNodes()) {
+        res.shadowRoot.appendChild(res.firstChild)
+      }
+      this.box = res.shadowRoot
+    }
+    return res.shadowRoot
   }
 
   /**
    * Call for loading of the component
    *
-   * @param {...any} param
+   * @param {object} params
+   * @param {string} path
    */
-  call(...param) {
-    this.emit(Component.LOAD, this, param)
+  call(params, path) {
+    if (this.logger) this.logger.debug(`calling ${this.name}, ${JSON.stringify(params)}, ${path}`)
+    this.emit(Component.LOAD, this, params, path)
   }
 
   /**
    * Load component inside the box
    *
-   * @param {...any} param
+   * @params {object} params
    */
-  load(param = []) {
-    if (this.logger) this.logger.debug(`${this.name}.load(`, ...param, ')')
+  load(params, path) {
+    if (this.logger) this.logger.debug(`${this.name}.load(${JSON.stringify(params)}, ${path} )`)
     this.active = true
     // fill with HTML and CSS (if exists)
-    this.populate(...param)
+    this.populate(params, path)
 
     // initiate the component
     if (this.logger) this.logger.debug(`${this.name}.init()`)
-    this.init(...param)
+    this.init(params, path)
   }
 
   /**
@@ -100,12 +110,12 @@ export default class Component {
     this.clean()
   }
 
-  populate(...param) {
+  populate(params, path) {
     // fill box with HTML if necessary
     if (this.hasHTML()) {
       this.empty()
       this.injectCSS()
-      this.injectHTML(this.box, ...param)
+      this.injectHTML(this.prepareBox(), params, path)
     }
   }
 
@@ -142,8 +152,8 @@ export default class Component {
   /**
    * init the component after appending to DOM
    */
-  init(...param) {
-    if (this.onload) this.onload(...param)
+  init(params, path) {
+    if (this.onload) this.onload(params, path)
   }
 
   /**
@@ -180,8 +190,15 @@ export default class Component {
    * @returns {HTMLElement}
    */
   gId(id) {
-    if (this.parent) return this.parent.gId(id)
-    else return this.box?.getElementById(id)
+    if (this.parent) {
+      if (this.logger) this.logger.debug(`parent: ${this.parent.name} search ${id}`)
+      return this.parent.gId(id)
+    }
+    else {
+      const box = this.prepareBox()
+      if (this.logger) this.logger.debug(`prepareBox has getElementById ${'getElementById' in box} search ${id}`)
+      return box.getElementById(id)
+    }
   }
 
   /**
@@ -207,7 +224,7 @@ export default class Component {
    * Clear the box contents
    * @param {Node} box
    */
-  empty(box = this.box) {
+  empty(box = this.prepareBox()) {
     while (box.hasChildNodes()) {
       box.removeChild(box.firstChild)
     }
@@ -233,7 +250,7 @@ export default class Component {
    * Inject component defined CSS into the box (if it exists)
    * @param {Node} box
    */
-  injectCSS(box = this.box) {
+  injectCSS(box = this.prepareBox()) {
     if (this.css) {
       const style = document.createElement('style')
       style.textContent = this.css
@@ -248,16 +265,66 @@ export default class Component {
    * Inject component defined HTML into the box (if it exists)
    * @param {Node} box
    */
-  injectHTML(box = this.box, ...param) {
+  injectHTML(box = this.prepareBox(), params, path) {
     if (this.html) {
       if (this.logger) this.logger.debug(`${this.name}: inject HTML (format:${typeof this.html})`)
       if (typeof this.html === 'string') {
         box.appendChild(this.fragmentFromHtml(this.html))
       } else if (typeof this.html === 'function') {
-        box.appendChild(this.fragmentFromHtml(this.html(this.context, ...param)))
+        box.appendChild(this.fragmentFromHtml(this.html(this.context, params, path)))
       }
     } else {
       if (this.logger) this.logger.debug(`${this.name}: no HTML injected`)
     }
   }
+
+  toString() {
+    return `${this.constructor.name}{ ${this.name} }`
+  }
+}
+
+export class HostComponent extends Component {
+
+  /**
+   *
+   * @param {Object.<string, number>} subRoute
+   */
+  setSubRoute(subRoute) {
+    this.subRoute = subRoute
+    Object.values(this.subRoute).forEach((sub) => {
+      sub.parent = this
+      if (sub instanceof HostComponent) {
+        Object.keys(sub.getSubRoute()).forEach(path => {
+          this.subRoute[path] = sub
+        })
+      }
+    })
+
+    if (this.logger) this.logger.debug(this.name, Object.fromEntries(Object.entries(subRoute).map(([p, x]) => ([p, x.name]))))
+  }
+
+  getSubRoute() {
+    return this.subRoute
+  }
+
+  load(params, path) {
+    super.load(params, path)
+
+    for (const [p, sub] of Object.entries(this.subRoute)) {
+      if (p !== path) {
+        const idx = this.children.indexOf(sub)
+        if (idx !== -1) {
+          this.children.splice(idx, 1)
+          sub.unload()
+        }
+      }
+    }
+    if (path in this.getSubRoute()) {
+      const sub = this.getSubRoute()[path]
+      this.children.push(sub)
+      if (this.logger) this.logger.debug(`${this.name}: ${sub.name}.init()`)
+      sub.load(params, path)
+    }
+  }
+
 }

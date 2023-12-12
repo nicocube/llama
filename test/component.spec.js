@@ -40,6 +40,9 @@ test('Component.empty self', async (t) => {
   try {
     const dom = new JSDOM('<!DOCTYPE html><div id="app"><b>Hello world</b></div>')
 
+    // eslint-disable-next-line no-undef
+    global.window = dom.window
+
     const appBox = dom.window.document.getElementById('app')
       , component = new Component({
         box: appBox
@@ -132,20 +135,22 @@ test('Component.injectHTML string + set children to zone + gId', async (t) => {
 
     // eslint-disable-next-line no-undef
     global.document = dom.window.document
+    // eslint-disable-next-line no-undef
+    global.window = dom.window
 
     const component = new Component({
       html: `<div>
   <div id="child00"><div id="in-child">HERE</div></div>
   <div id="child01"></div></div>
 </div>`,
-      box: Component.prepare(document.getElementById('app')),
-      context: {}
+      box: document.getElementById('app'),
+      context: {},
     })
 
     component.load()
 
     const child = new Component({
-      box: component.gId('child00')
+      box: component.gId('child00'),
     })
 
     component.addChildren(
