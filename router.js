@@ -83,18 +83,18 @@ export default class Router {
 
   /**
    *
-   * @param {EventBus} evenBus
+   * @param {EventBus} eventBus
    * @param {object} [options]
    * @param {Console} [options.logger] define a logger, can be {logger: console} to send on the javascript console
    */
-  constructor(evenBus, options) {
+  constructor(eventBus, options) {
     /**
      * @property {Path[]} routes
      */
     this.routes = []
     this.actions = {}
     this.before_action = undefined
-    this.evenBus = evenBus
+    this.eventBus = eventBus
     this.logger = options?.logger || undefined
   }
 
@@ -118,7 +118,7 @@ export default class Router {
     this._route = () => this.route()
     window.addEventListener('hashchange', this._route)
     window.addEventListener('load', this._route)
-    if (this.evenBus) this.evenBus.on('router', Router.GO, (path) => {
+    if (this.eventBus) this.eventBus.on('router', Router.GO, (path) => {
       this.go(path)
     })
   }
@@ -153,14 +153,14 @@ export default class Router {
     if (this.logger) this.logger.debug(`router.route() ${parsed ? 'found ' + parsed.toString() : 'not found'}`)
 
     if (typeof parsed === 'undefined') {
-      if (this.evenBus) this.evenBus.emit(Router.LAND, Router.NOT_FOUND, { path })
+      if (this.eventBus) this.eventBus.emit(Router.LAND, Router.NOT_FOUND, { path })
       if (Router.NOT_FOUND in this.actions) {
         const action = this.actions[Router.NOT_FOUND]
         if (action instanceof Component) await action.call({}, path)
         else await action({}, path)
       }
     } else {
-      if (this.evenBus) this.evenBus.emit(Router.LAND, parsed.params, parsed.path)
+      if (this.eventBus) this.eventBus.emit(Router.LAND, parsed.params, parsed.path)
       if (this.before_action) await this.before_action(parsed)
 
       const action = this.actions[parsed.path]

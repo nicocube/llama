@@ -83,12 +83,12 @@ function recBuildEmbedded(path, embed, opt) {
 
     if (opt.logger) opt.logger.debug(`adding sub component ${path} + ${p}`)
     const box = t.box || opt.sub_box || 'sub'
-      , evenBus = opt.evenBus
+      , eventBus = opt.eventBus
       , context = opt.context
       , logger = opt.logger || undefined
     if (typeof t === 'object') {
       const type = t.type || (!('embed' in t) ? Component : HostComponent)
-        , component = new type(Object.assign({}, t, { box, evenBus, context, logger }))
+        , component = new type(Object.assign({}, t, { box, eventBus, context, logger }))
 
       if ('embed' in t) {
         if (!(component instanceof HostComponent)) throw new Error('llama.host.component.must.be.type.HostComponent')
@@ -98,7 +98,7 @@ function recBuildEmbedded(path, embed, opt) {
 
       res[path + p] = component
     } else {
-      res[path + p] = new t(Object.assign({}, t, { box, evenBus, context, logger }))
+      res[path + p] = new t(Object.assign({}, t, { box, eventBus, context, logger }))
     }
 
   }
