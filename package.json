@@ -23,9 +23,9 @@
   "devDependencies": {
     "@freecube/tap-summary": "^4.0.4",
     "c8": "^8.0.1",
-    "eslint": "^8.55.0",
-    "eslint-plugin-import": "^2.29.0",
-    "eslint-plugin-jsdoc": "^46.9.0",
+    "eslint": "^8.56.0",
+    "eslint-plugin-import": "^2.29.1",
+    "eslint-plugin-jsdoc": "^46.9.1",
     "jsdom": "^23.0.1",
     "nodemon": "^3.0.2",
     "tape": "^5.7.2"
