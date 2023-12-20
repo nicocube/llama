@@ -82,12 +82,12 @@ function recBuildEmbedded(path, embed, opt) {
   for (const [p, t] of Object.entries(embed)) {
 
     if (opt.logger) opt.logger.debug(`adding sub component ${path} + ${p}`)
+    const box = t.box || opt.sub_box || 'sub'
+      , evenBus = opt.evenBus
+      , context = opt.context
+      , logger = opt.logger || undefined
     if (typeof t === 'object') {
-      const box = t.box || opt.sub_box || 'sub'
-        , type = t.type || (!('embed' in t) ? Component : HostComponent)
-        , evenBus = opt.evenBus
-        , context = opt.context
-        , logger = opt.logger || undefined
+      const type = t.type || (!('embed' in t) ? Component : HostComponent)
         , component = new type(Object.assign({}, t, { box, evenBus, context, logger }))
 
       if ('embed' in t) {
@@ -98,7 +98,7 @@ function recBuildEmbedded(path, embed, opt) {
 
       res[path + p] = component
     } else {
-      res[path + p] = new t(opt)
+      res[path + p] = new t(Object.assign({}, t, { box, evenBus, context, logger }))
     }
 
   }

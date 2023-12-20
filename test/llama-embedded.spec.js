@@ -524,7 +524,7 @@ test('llama with embedded routes: pure Object definition, change other', async (
   }
 })
 
-test('llama with embedded routes: Component class definition', async (t) => {
+test('llama with embedded routes: Component class definition root', async (t) => {
   try {
     const dom = new JSDOM('<!DOCTYPE html><div id="app"><b>Hello world</b></div>', {
       url: 'http://localhost/#/other/foobar',
@@ -540,6 +540,11 @@ test('llama with embedded routes: Component class definition', async (t) => {
     const router = await new Promise((resolve, reject) => {
 
       class OtherComponent extends HostComponent {
+        constructor(opt) {
+          super(Object.assign({}, opt, {
+            html: '<b>Other</b><div id="sub"></div>',
+          }))
+        }
         init() {
           t.deepEqual(count, 0)
           count++
@@ -550,7 +555,7 @@ test('llama with embedded routes: Component class definition', async (t) => {
 
       const conf = llama({
         box: dom.window.document.getElementById('app'),
-        context: {},
+        context: { plop: 'some context' },
         eventBus,
         routes: {
           '/': {
@@ -565,6 +570,7 @@ test('llama with embedded routes: Component class definition', async (t) => {
             embed: {
               '/:id': {
                 name: 'inside',
+                html: (ctx, { id }, path) => `inside obj def ${ctx.plop} id:${id} for ${path}`,
                 onload({ id }) {
                   t.deepEqual(count, 1)
                   t.deepEqual(id, 'foobar')
@@ -594,6 +600,11 @@ test('llama with embedded routes: Component class definition', async (t) => {
     t.deepEqual(count, 2)
     // window.location.hash = '/other'
 
+    t.deepEqual(
+      dom.window.document.getElementById('app').shadowRoot.innerHTML,
+      '<b>Other</b><div id="sub">inside obj def some context id:foobar for /other/:id</div>'
+    )
+
     router.stop()
 
     // clean after usage
@@ -603,7 +614,107 @@ test('llama with embedded routes: Component class definition', async (t) => {
   } catch (e) {
     t.fail(e.stack)
   } finally {
-    t.plan(4)
+    t.plan(5)
+    t.end()
+  }
+
+})
+
+test('llama with embedded routes: Component class definition root and embedded', async (t) => {
+  try {
+    const dom = new JSDOM('<!DOCTYPE html><div id="app"><b>Hello world</b></div>', {
+      url: 'http://localhost/#/other/barbar',
+    })
+    const eventBus = new EventBus()
+
+    // must be global to mimic browser behavior
+    // eslint-disable-next-line no-undef
+    global.window = dom.window
+
+    let count = 0
+
+    const router = await new Promise((resolve, reject) => {
+
+      class OtherComponent extends HostComponent {
+        constructor(opt) {
+          super(Object.assign({}, opt, {
+            html: '<b>Other</b><div id="sub"></div>',
+          }))
+        }
+        init() {
+          t.deepEqual(count, 0)
+          count++
+          if (this.logger) this.logger.log('in other')
+          resolve(conf)
+        }
+      }
+      class InsideComponent extends Component {
+        constructor(opt) {
+          super(Object.assign({}, opt, {
+            html: (ctx, { id }, path) => `inside component ${ctx.plop} id:${id} for ${path}`,
+          }))
+        }
+        init({ id }) {
+          t.deepEqual(count, 1)
+          t.deepEqual(id, 'barbar')
+          count++
+          if (this.logger) this.logger.log('in other')
+          resolve(conf)
+        }
+      }
+
+      const conf = llama({
+        box: dom.window.document.getElementById('app'),
+        context: { plop: 'some new context' },
+        eventBus,
+        routes: {
+          '/': {
+            name: 'main',
+            onload() {
+              t.fail('should not be here')
+              reject('wrong place')
+            }
+          },
+          '/other': {
+            type: OtherComponent,
+            embed: {
+              '/:id': InsideComponent
+            }
+          },
+          [Router.NOT_FOUND]: {
+            name: Router.NOT_FOUND,
+            html: '404 Page not found',
+            onload() {
+              t.fail('should not be here')
+              reject('wrong place')
+            }
+          },
+        },
+        // logger: console
+      })
+      conf.run()
+
+      // if nothing resolved before 500ms, let's get out
+      setTimeout(() => reject(new Error('Failed to find route')), 500)
+    })
+    t.deepEqual(count, 2)
+    // window.location.hash = '/other'
+
+    t.deepEqual(
+      dom.window.document.getElementById('app').shadowRoot.innerHTML,
+      '<b>Other</b><div id="sub">inside component some new context id:barbar for /other/:id</div>'
+    )
+
+    router.stop()
+
+    // clean after usage
+    // eslint-disable-next-line no-undef
+    delete global.window
+
+  } catch (e) {
+    t.fail(e.stack)
+  } finally {
+    t.plan(5)
     t.end()
   }
 
