@@ -329,6 +329,9 @@ export class HostComponent extends Component {
       if (this.logger) this.logger.debug(`${this.name}: ${sub.name}.load(${params},${path})`)
       sub.load(params, path)
     }
+
+    this.postLoad()
   }
 
+  postLoad() {}
 }

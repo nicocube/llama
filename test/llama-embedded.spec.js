@@ -647,6 +647,10 @@ test('llama with embedded routes: Component class definition root and embedded',
           if (this.logger) this.logger.log('in other')
           resolve(conf)
         }
+        postLoad() {
+          t.deepEqual(count, 2)
+          count++
+        }
       }
       class InsideComponent extends Component {
         constructor(opt) {
@@ -697,7 +701,7 @@ test('llama with embedded routes: Component class definition root and embedded',
       // if nothing resolved before 500ms, let's get out
       setTimeout(() => reject(new Error('Failed to find route')), 500)
     })
-    t.deepEqual(count, 2)
+    t.deepEqual(count, 3)
     // window.location.hash = '/other'
 
     t.deepEqual(
@@ -714,7 +718,7 @@ test('llama with embedded routes: Component class definition root and embedded',
   } catch (e) {
     t.fail(e.stack)
   } finally {
-    t.plan(5)
+    t.plan(6)
     t.end()
   }
 
