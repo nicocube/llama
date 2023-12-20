@@ -1,6 +1,6 @@
 {
   "name": "llama",
-  "version": "2.1.2",
+  "version": "2.1.3",
   "description": "Wooley, sure-footed. A very small kit of reusable UI utilities.",
   "main": "index.js",
   "type": "module",
