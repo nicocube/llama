@@ -107,6 +107,102 @@ test('llama with embedded routes: pure Object definition', async (t) => {
   }
 })
 
+test('llama with embedded routes: pure Object definition, default subroute', async (t) => {
+  try {
+    const dom = new JSDOM('<!DOCTYPE html><div id="app"><b>Hello world</b></div>', {
+      url: 'http://localhost/#/',
+    })
+    const eventBus = new EventBus()
+
+    // must be global to mimic browser behavior
+    // eslint-disable-next-line no-undef
+    global.window = dom.window
+    // eslint-disable-next-line no-undef
+    global.document = dom.window.document
+
+    let count = 0
+
+    const router = await new Promise((resolve, reject) => {
+      class OtherComponent extends Component {
+        init() {
+          t.fail('should not be here')
+          reject('wrong place')
+        }
+      }
+      const conf = llama({
+        box: 'app',
+        context: {},
+        eventBus,
+        routes: {
+          '/': {
+            name: 'main',
+            html: '<b>Main</b><div id="sub"></div>',
+            onload() {
+              t.deepEqual(count, 0)
+              count++
+              if (this.logger) this.logger.log('in main')
+            },
+            embed: {
+              '': {
+                name: 'default',
+                html: (ctx, params, path) => `in default ${path}`,
+                onload() {
+                  t.deepEqual(count, 1)
+                  count++
+                  if (this.logger) this.logger.log('in plop')
+                  resolve(conf)
+                }
+              },
+              'in/:id': {
+                name: 'inside',
+                html: (ctx, params, path) => `in ${path} with ${JSON.stringify(params)}`,
+                onload() {
+                  t.fail('should not be here')
+                  reject('wrong place')
+                }
+              }
+            }
+          },
+          '/other': OtherComponent,
+          [Router.NOT_FOUND]: {
+            name: Router.NOT_FOUND,
+            type: Component,
+            html: '404 Page not found',
+            onload() {
+              t.fail('should not be here')
+              reject('wrong place')
+            }
+          },
+        },
+        // logger: console
+      })
+      conf.run()
+
+      // if nothing resolved before 500ms, let's get out
+      setTimeout(() => reject(new Error('Failed to find route')), 500)
+    })
+    t.deepEqual(count, 2)
+    // window.location.hash = '/other'
+
+    t.deepEqual(
+      dom.window.document.getElementById('app').shadowRoot.innerHTML,
+      '<b>Main</b><div id="sub">in default /</div>'
+    )
+
+    router.stop()
+
+    // clean after usage
+    // eslint-disable-next-line no-undef
+    delete global.window
+
+  } catch (e) {
+    t.fail(e.stack)
+  } finally {
+    t.plan(4)
+    t.end()
+  }
+})
+
 test('llama with embedded routes: pure Object definition, deep', async (t) => {
   try {
     const dom = new JSDOM('<!DOCTYPE html><div id="app"><b>Hello world</b></div>', {

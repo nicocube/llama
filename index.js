@@ -14,7 +14,7 @@ import EventBus from './event-bus.js'
 import Router from './router.js'
 
 export {
-  Component, EventBus, Router
+  Component, HostComponent, EventBus, Router
 }
 
 /**
