@@ -121,14 +121,18 @@ export default class Component {
 
   /**
    *
+   * @param {object} [params]
+   * @param {string} [path]
    * @param {...Component} children
   */
-  addChildren(...children) {
+  addChildren(params, path, ...children) {
+    if (params instanceof Component) children.unshift(params)
+    if (path instanceof Component) children.unshift(path)
     children.forEach((child) => {
       this.children.push(child)
       if (this.logger) this.logger.debug(`${this.name}: ${child.name}.init()`)
       child.parent = this
-      child.init()
+      child.init(params, path)
     })
   }
 
@@ -322,7 +326,7 @@ export class HostComponent extends Component {
     if (path in this.getSubRoute()) {
       const sub = this.getSubRoute()[path]
       this.children.push(sub)
-      if (this.logger) this.logger.debug(`${this.name}: ${sub.name}.init()`)
+      if (this.logger) this.logger.debug(`${this.name}: ${sub.name}.load(${params},${path})`)
       sub.load(params, path)
     }
   }
