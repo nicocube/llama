@@ -231,7 +231,8 @@ test('llama with embedded routes: pure Object definition, deep', async (t) => {
         routes: {
           '/': {
             name: 'main',
-            html: '<b>Main</b><div id="sub"></div>',
+            sub_box: 'my-sub',
+            html: '<b>Main</b><div id="my-sub"></div>',
             onload() {
               t.deepEqual(count, 0)
               count++
@@ -287,7 +288,7 @@ test('llama with embedded routes: pure Object definition, deep', async (t) => {
 
     t.deepEqual(
       dom.window.document.getElementById('app').shadowRoot.innerHTML,
-      '<b>Main</b><div id="sub"><b>Deep: plop</b><div id="in-deep">in /deep/:id/in/:id with {"id":"plop"}</div></div>'
+      '<b>Main</b><div id="my-sub"><b>Deep: plop</b><div id="in-deep">in /deep/:id/in/:id with {"id":"plop"}</div></div>'
     )
 
     router.stop()
