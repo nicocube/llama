@@ -55,23 +55,29 @@ export default class Component {
 
   prepareBox() {
     if (this.logger) this.logger.debug(`prepare box for ${this.name}, ${this.box}`)
-    let res = this.box
-    if (res instanceof window.ShadowRoot) {
-      if (this.logger) this.logger.debug(`${res.innerHTML}`)
-      return res
-    }
-    if (typeof res === 'string') {
-      if (this.parent) return this.parent.gId(res)
-      else res = document.getElementById(res)
-    }
-    if (!res.shadowRoot) {
-      res.attachShadow({ mode: 'open' })
-      while (res.hasChildNodes()) {
-        res.shadowRoot.appendChild(res.firstChild)
+    // no parent
+    if (!this.parent) {
+      if (!(this.box instanceof window.ShadowRoot)) {
+        let tmp = this.box
+        if (typeof this.box === 'string') {
+          tmp = document.getElementById(this.box)
+        }
+        if (!tmp.shadowRoot) {
+          tmp.attachShadow({ mode: 'open' })
+          while (tmp.hasChildNodes()) {
+            tmp.shadowRoot.appendChild(tmp.firstChild)
+          }
+          this.box = tmp.shadowRoot
+        }
       }
-      this.box = res.shadowRoot
+      return this.box
+    } else {
+      if (typeof this.box === 'string') {
+        this.box = this.parent.gId(this.box)
+      }
+      return this.box
     }
-    return res.shadowRoot
+
   }
 
   /**
@@ -333,5 +339,5 @@ export class HostComponent extends Component {
     this.postLoad()
   }
 
-  postLoad() {}
+  postLoad() { }
 }

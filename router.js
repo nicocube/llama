@@ -103,7 +103,7 @@ export default class Router {
   }
 
   /**
-   * 
+   *
    * @param {string} path
    * @param {function|Component} action
    */
