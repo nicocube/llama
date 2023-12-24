@@ -138,7 +138,7 @@ export default class Component {
       this.children.push(child)
       if (this.logger) this.logger.debug(`${this.name}: ${child.name}.init()`)
       child.parent = this
-      child.init(params, path)
+      child.load(params, path)
     })
   }
 
