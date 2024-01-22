@@ -67,8 +67,8 @@ export default class Component {
           while (tmp.hasChildNodes()) {
             tmp.shadowRoot.appendChild(tmp.firstChild)
           }
-          this.box = tmp.shadowRoot
         }
+        this.box = tmp.shadowRoot
       }
       return this.box
     } else {
