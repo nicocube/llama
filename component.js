@@ -23,7 +23,7 @@ export default class Component {
    * @param {Object} options a set of option al
    * @param {string} [options.name] name of the component to serve as source for event listeners
    * @param {EventBus} options.eventBus to receive and send events
-   * @param {ShadowRoot|string} options.box
+   * @param {HTMLElement|ShadowRoot|string} options.box
    * @param {string|(context,...param)=>{}} [options.html]
    * @param {string} [options.css]
    * @param {Object.<string,any>} [options.context]

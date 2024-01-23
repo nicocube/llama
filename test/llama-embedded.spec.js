@@ -241,6 +241,7 @@ test('llama with embedded routes: pure Object definition, deep', async (t) => {
             embed: {
               'deep/:id/': {
                 name: 'deep',
+                sub_box: 'in-deep',
                 html: (ctx, params) => `<b>Deep: ${params.id}</b><div id="in-deep"></div>`,
                 onload({ id }) {
                   t.deepEqual(count, 1)
@@ -250,7 +251,6 @@ test('llama with embedded routes: pure Object definition, deep', async (t) => {
                 },
                 embed: {
                   'in/:id': {
-                    box: 'in-deep',
                     name: 'inside',
                     html: (ctx, params, path) => `in ${path} with ${JSON.stringify(params)}`,
                     onload({ id }) {

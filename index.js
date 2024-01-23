@@ -21,6 +21,8 @@ export {
  * @typedef {Object} RouteTarget
  * @property {typeof Component} [type]
  * @property {string} [name] name of the component to serve as source for event listeners
+ * @property {string|HTMLElement} [box]
+ * @property {string|HTMLElement} [sub_box]
  * @property {string|(context,...param)=>{}} [html]
  * @property {string} [css]
  * @property {(...param)=>{}} [onload]
@@ -59,7 +61,11 @@ export default function llama(options) {
       router.on(path, component)
 
       if ('embed' in target) {
-        const subRoute = recBuildEmbedded(path, target.embed, opt)
+        const recOpt = { box, eventBus, context }
+        if ('sub_box' in target) recOpt.sub_box = target.sub_box
+        if (('logger' in opt)) recOpt.logger = opt.logger
+
+        const subRoute = recBuildEmbedded(path, target.embed, recOpt)
         component.setSubRoute(subRoute)
         for (const p of flattenSubRoute(subRoute)) {
           router.on(p, component)
@@ -85,20 +91,28 @@ function recBuildEmbedded(path, embed, opt) {
     const box = t.box || opt.sub_box || 'sub'
       , eventBus = opt.eventBus
       , context = opt.context
-      , logger = opt.logger || undefined
+
+    const subOpt = Object.assign({}, t, { box, eventBus, context })
+    if (('logger' in opt) && !('logger' in opt)) subOpt.logger = opt.logger
+
     if (typeof t === 'object') {
       const type = t.type || (!('embed' in t) ? Component : HostComponent)
-        , component = new type(Object.assign({}, t, { box, eventBus, context, logger }))
+        , component = new type(subOpt)
 
       if ('embed' in t) {
         if (!(component instanceof HostComponent)) throw new Error('llama.host.component.must.be.type.HostComponent')
-        const subRoute = recBuildEmbedded(path + p, t.embed, opt)
+
+        const recOpt = { box, eventBus, context }
+        if ('sub_box' in t) recOpt.sub_box = t.sub_box
+        if (('logger' in subOpt)) recOpt.logger = subOpt.logger
+
+        const subRoute = recBuildEmbedded(path + p, t.embed, recOpt)
         component.setSubRoute(subRoute)
       }
 
       res[path + p] = component
     } else {
-      res[path + p] = new t(Object.assign({}, t, { box, eventBus, context, logger }))
+      res[path + p] = new t(subOpt)
     }
 
   }
