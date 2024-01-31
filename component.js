@@ -24,10 +24,11 @@ export default class Component {
    * @param {string} [options.name] name of the component to serve as source for event listeners
    * @param {EventBus} options.eventBus to receive and send events
    * @param {HTMLElement|ShadowRoot|string} options.box
-   * @param {string|(context,...param)=>{}} [options.html]
+   * @param {string|(context: object, params: object, path: string)=>{}} [options.html]
    * @param {string} [options.css]
    * @param {Object.<string,any>} [options.context]
-   * @param {(param: object, path: string)=>{}} [options.onload]
+   * @param {(params: object, path: string)=>{}} [options.onload]
+   * @param {(params: object, path: string)=>{}} [options.onPostLoad]
    * @param {Console} [options.logger] define a logger, can be {logger: console} to send on the javascript console
    */
   constructor(options = {}) {
@@ -37,24 +38,80 @@ export default class Component {
     this.box = options?.box
     this.html = options?.html
     this.css = options?.css
-    this.context = options?.context
+    this.context = options?.context || {}
     this.logger = options?.logger
     this.onload = options?.onload
+    this.onPostLoad = options?.onPostLoad
     this.children = []
     this.parent = undefined
     this.active = false
-    if (this.logger) this.logger.debug(`create ${this.name} ${this.id}`)
-    this.on(Component.LOAD)?.before((loadingComponent, params, path) => {
-      if (this.logger) this.logger.debug('before', this.name, this.active, !this.parent, loadingComponent !== this, params, path)
-      if (this.active && !this.parent && loadingComponent !== this) this.unload()
-    })?.do((loadingComponent, params, path) => {
-      if (this.logger) this.logger.debug('do', this.name, path, params, loadingComponent === this)
-      if (loadingComponent === this) this.load(params, path)
-    })
+    this.listening = false
+    if (this.logger) this.logger.info(`${this.name}: created, id:${this.id}`)
+  }
+
+  listen() {
+    if (!this.listening) {
+      this.listening = true
+      if (this.logger) this.logger.info(`${this.name}: listening`)
+      this.on(Component.LOAD).before((loadingComponent, params, path) => {
+        const isNotMe = loadingComponent !== this
+        const isUnloading = this.active && isNotMe
+        if (this.logger) this.logger.debug(`${this.name}: unload? ${isUnloading} (active: ${this.active}, isNotMe: ${isNotMe})`)
+        if (isUnloading) this.unload(path)
+      })?.do((loadingComponent, params, path) => {
+        if (loadingComponent === this) {
+          if (this.logger) this.logger.info(`${this.name}.load(${JSON.stringify(params)}, ${path} )`)
+          this.load(params, path)
+          if (this.logger) this.logger.info(`${this.name}.postLoad(${JSON.stringify(params)}, ${path} )`)
+          this.postLoad(params, path)
+        }
+      })
+    }
+  }
+
+  /**
+   * Call for loading of the component
+   *
+   * @param {object} params
+   * @param {string} path
+   */
+  call(params, path) {
+    if (this.logger) this.logger.debug(`${this.name}: calling(${JSON.stringify(params)}, ${path})`)
+    this.emit(Component.LOAD, this, params, path)
+  }
+
+  /**
+   * Load component inside the box
+   *
+   * @params {object} params
+   */
+  load(params, path) {
+    this.active = true
+    // fill with HTML and CSS (if exists)
+    this.populate(params, path)
+
+    // initiate the component
+    if (this.logger) this.logger.debug(`${this.name}.init()`)
+    this.init(params, path)
+  }
+
+  /**
+   * Unload component
+   */
+  unload() {
+    if (this.logger) this.logger.info(`${this.name}.unload()`)
+    this.active = false
+    // remove the listeners of this component in the eventBus
+    this.clean()
   }
 
   prepareBox() {
-    if (this.logger) this.logger.debug(`prepare box for ${this.name}, ${this.box}`)
+    if (this.logger) this.logger.debug(`${this.name}: prepare id='${typeof this.box === 'string'
+      ? this.box
+      : this.box.host
+        ? this.box.host.id
+        : this.box.id
+    }'`)
     // no parent
     if (!this.parent) {
       if (!(this.box instanceof window.ShadowRoot)) {
@@ -73,55 +130,22 @@ export default class Component {
       return this.box
     } else {
       if (typeof this.box === 'string') {
-        this.box = this.parent.gId(this.box)
+        const tmp = this.parent.gId(this.box)
+        if (tmp) this.box = tmp
       }
       return this.box
     }
 
   }
 
-  /**
-   * Call for loading of the component
-   *
-   * @param {object} params
-   * @param {string} path
-   */
-  call(params, path) {
-    if (this.logger) this.logger.debug(`calling ${this.name}, ${JSON.stringify(params)}, ${path}`)
-    this.emit(Component.LOAD, this, params, path)
-  }
-
-  /**
-   * Load component inside the box
-   *
-   * @params {object} params
-   */
-  load(params, path) {
-    if (this.logger) this.logger.debug(`${this.name}.load(${JSON.stringify(params)}, ${path} )`)
-    this.active = true
-    // fill with HTML and CSS (if exists)
-    this.populate(params, path)
-
-    // initiate the component
-    if (this.logger) this.logger.debug(`${this.name}.init()`)
-    this.init(params, path)
-  }
-
-  /**
-   * Unload component
-   */
-  unload() {
-    if (this.logger) this.logger.debug(`${this.name}.unload()`)
-    this.active = false
-    this.clean()
-  }
-
   populate(params, path) {
+    if (this.logger) this.logger.debug(`${this.name}.populate()`)
     // fill box with HTML if necessary
     if (this.hasHTML()) {
-      this.empty()
-      this.injectCSS()
-      this.injectHTML(this.prepareBox(), params, path)
+      const box = this.prepareBox()
+      this.empty(box)
+      this.injectCSS(box)
+      this.injectHTML(box, params, path)
     }
   }
 
@@ -132,24 +156,25 @@ export default class Component {
    * @param {...Component} children
   */
   addChildren(params, path, ...children) {
-    if (params instanceof Component) children.unshift(params)
     if (path instanceof Component) children.unshift(path)
+    if (params instanceof Component) children.unshift(params)
     children.forEach((child) => {
-      this.children.push(child)
-      if (this.logger) this.logger.debug(`${this.name}: ${child.name}.init()`)
       child.parent = this
+      this.children.push(child)
+      if (this.logger) this.logger.debug(`${this.name}: ${child.name}.load()`)
       child.load(params, path)
     })
+    if (this.logger) this.logger.log(`${this.name}.addChildren:`, this.children.map(x => x.name))
   }
 
   /**
    *
-   * @param {Component} child
-   * @param {boolean} [remove] = true
-   */
+   * @param {...Component} children
+  */
   removeChildren(...children) {
     // eslint-disable-next-line no-param-reassign
-    if (children.length === 0) children = this.children
+    if (children.length === 0) children = this.children.slice()
+    if (this.logger) this.logger.log(`${this.name}.removeChildren:`, this.children.map(x => x.name))
     children.forEach((child) => {
       child.clean()
       const idx = this.children.indexOf(child)
@@ -164,6 +189,13 @@ export default class Component {
    */
   init(params, path) {
     if (this.onload) this.onload(params, path)
+  }
+
+  /**
+   * activate after load
+   */
+  postLoad(params, path) {
+    if (this.onPostLoad) this.onPostLoad(params, path)
   }
 
   /**
@@ -201,12 +233,12 @@ export default class Component {
    */
   gId(id) {
     if (this.parent) {
-      if (this.logger) this.logger.debug(`parent: ${this.parent.name} search ${id}`)
+      if (this.logger) this.logger.debug(`${this.name}: gId search in parent: ${this.parent.name} (${id})`)
       return this.parent.gId(id)
     }
     else {
       const box = this.prepareBox()
-      if (this.logger) this.logger.debug(`prepareBox has getElementById ${'getElementById' in box} search ${id}`)
+      if (this.logger) this.logger.debug(`${this.name}: gId (${id})`)
       return box.getElementById(id)
     }
   }
@@ -310,34 +342,47 @@ export class HostComponent extends Component {
       }
     })
 
-    if (this.logger) this.logger.debug(this.name, Object.fromEntries(Object.entries(subRoute).map(([p, x]) => ([p, x.name]))))
+    if (this.logger) this.logger.debug(`${this.name}.subRoute:`, Object.fromEntries(Object.entries(subRoute).map(([p, x]) => ([p, x.name]))))
   }
 
   getSubRoute() {
     return this.subRoute
   }
 
-  load(params, path) {
-    super.load(params, path)
-
-    for (const [p, sub] of Object.entries(this.subRoute)) {
-      if (p !== path) {
-        const idx = this.children.indexOf(sub)
-        if (idx !== -1) {
-          this.children.splice(idx, 1)
-          sub.unload()
-        }
-      }
-    }
-    if (path in this.getSubRoute()) {
-      const sub = this.getSubRoute()[path]
-      this.children.push(sub)
-      if (this.logger) this.logger.debug(`${this.name}: ${sub.name}.load(${params},${path})`)
-      sub.load(params, path)
-    }
-
-    this.postLoad()
+  getSubComponent(path) {
+    return this.getSubRoute()[path]
   }
 
-  postLoad() { }
+  load(params, path) {
+    if (!this.active) {
+      super.load(params, path)
+    }
+    if (this.logger) this.logger.debug(`${this.name}: load embedded`)
+
+    const sub = this.getSubComponent(path)
+    if (sub) {
+      sub.parent = this
+      this.children.push(sub)
+      sub.listen()
+      if (this.logger) this.logger.debug(`${this.name}: ${sub.name}.load(${JSON.stringify(params)},${path})`)
+      sub.load(params, path)
+      if (sub.postLoad) {
+        if (sub.logger) this.logger.debug(`${this.name}: ${sub.name}.postLoad(${JSON.stringify(params)}, ${path} )`)
+        sub.postLoad(params, path)
+      }
+    }
+  }
+
+  unload(path) {
+    if (! this.parent) super.unload()
+    else {
+      const sub = this.getSubComponent(path)
+      if (!sub) {
+        // remove the listeners of this component in the eventBus
+        this.eventBus?.clear(this.name, (k) => k !== Component.LOAD)
+        super.unload()
+      }
+    }
+  }
+
 }

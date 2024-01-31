@@ -111,6 +111,7 @@ export default class Router {
     if (this.logger) this.logger.debug(`router.on(${path}, ${action.toString()})`)
     this.routes.push(Path.build(path))
     this.actions[path] = action
+    if (action instanceof Component) action.listen(path)
   }
 
   run() {

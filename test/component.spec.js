@@ -15,6 +15,7 @@ import test from 'tape'
 
 import { JSDOM } from 'jsdom'
 import Component from '../component.js'
+import EventBus from '../event-bus.js'
 // import EventBus from '../event-bus.js'
 
 test('Component.empty other', async (t) => {
@@ -167,6 +168,92 @@ test('Component.injectHTML string + set children to zone + gId', async (t) => {
     t.fail(e.stack)
   } finally {
     t.plan(1)
+    t.end()
+  }
+})
+
+
+test('Component.unload', async (t) => {
+  try {
+    const dom = new JSDOM('<!DOCTYPE html><div id="app"></div>')
+
+    // eslint-disable-next-line no-undef
+    global.document = dom.window.document
+    // eslint-disable-next-line no-undef
+    global.window = dom.window
+
+    let count = 0
+    const eventBus = new EventBus()
+
+    const component = new Component({
+      name: 'parent',
+      eventBus,
+      html: `<div>
+  <div id="child00"><div id="in-child">HERE</div></div>
+  <div id="child01"></div></div>
+</div>`,
+      box: document.getElementById('app'),
+      onload() {
+        if (this.logger) this.logger.log(`UT> ${this.name}.onload`)
+        component.addChildren(
+          new Component({
+            name: 'child00',
+            eventBus,
+            box: component.gId('child00'),
+            onload() {
+              if (this.logger) this.logger.log(`UT> ${this.name}.onload`)
+              this.on('X', () => {
+                if (this.logger) this.logger.log(`UT> ${this.name}> event X`, count)
+                if (count === 0) t.ok(true)
+                else t.fail('should pass once')
+              })
+            }
+          }),
+          new Component({
+            name: 'child01',
+            eventBus,
+            box: component.gId('child01'),
+            onload() {
+              if (this.logger) this.logger.log(`UT> ${this.name}.onload`)
+              this.on('X', () => {
+                if (this.logger) this.logger.log(`UT> ${this.name}> event X`, count)
+                if (count === 0) t.ok(true)
+                else t.fail('should pass once')
+              })
+            }
+          })
+        )
+
+        this.on('X', () => {
+          if (this.logger) this.logger.log(`UT> ${this.name}> event X`, count)
+          if (count === 0) t.ok(true)
+          else t.fail('should pass once')
+        })
+      }
+    })
+
+    eventBus.on('test', 'X', (resolve) => {
+      resolve()
+    })
+
+    component.load()
+
+    await new Promise((resolve) => {
+      eventBus.emit('X', resolve)
+    })
+
+    count++
+
+    component.unload()
+
+    await new Promise((resolve) => {
+      eventBus.emit('X', resolve)
+    })
+
+  } catch (e) {
+    t.fail(e.stack)
+  } finally {
+    t.plan(3)
     t.end()
   }
 })
