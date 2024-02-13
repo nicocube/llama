@@ -14,11 +14,13 @@ export class SimpleEventBus {
    * A simple event bus to enable event-driven architecture
    * @param {Object} options optional parameters
    * @param {string} [options.name] define a name, in a multi EventBus scenario
+   * @param {(e:Error) => {}} [options.catcher] define an error catching function
    * @param {Console} [options.logger] define a logger, can be {logger: console} to send on the javascript console
    */
   constructor(options = {}) {
     this._hook = new Map()
     this.name = options?.name || 'emit'
+    this.catcher = options?.catcher
     this.logger = options?.logger
   }
 
@@ -50,7 +52,12 @@ export class SimpleEventBus {
   emit(k, ...p) {
     if (this.logger && (!this.logger?.logFor || this.logger?.logFor(this.name))) this.logger.debug(`EventBus.emit<${this.name}>: %s`, k, ...p)
     setTimeout(() => {
-      this._run(k, p)
+      try {
+        this._run(k, p)
+      } catch (error) {
+        if (this.catcher) this.catcher(error, this.name)
+        else throw error
+      }
     }, 1)
   }
 
@@ -99,12 +106,13 @@ export class SequenceEventBus {
   /**
    * A simple event bus to enable event-driven architecture
    * @param {Object} options optional parameters
+   * @param {(e:Error, ...r) => {}} [options.catcher] define an error catching function
    * @param {Console} [options.logger] define a logger, can be {logger: console} to send on the javascript console
    */
   constructor(options = {}) {
-    this._before = new SimpleEventBus({ name: 'before', logger: options?.logger })
-    this._emit = new SimpleEventBus({ name: 'emit', logger: options?.logger })
-    this._after = new SimpleEventBus({ name: 'after', logger: options?.logger })
+    this._before = new SimpleEventBus({ name: 'before', catcher: options?.catcher, logger: options?.logger })
+    this._emit = new SimpleEventBus({ name: 'emit', catcher: options?.catcher, logger: options?.logger })
+    this._after = new SimpleEventBus({ name: 'after', catcher: options?.catcher, logger: options?.logger })
   }
 
   /**

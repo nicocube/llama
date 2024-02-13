@@ -25,6 +25,8 @@ test('llama flat routes: Object definition', async (t) => {
     // must be global to mimic browser behavior
     // eslint-disable-next-line no-undef
     global.window = dom.window
+    // eslint-disable-next-line no-undef
+    global.document = dom.window.document
 
     let count = 0
 
@@ -36,7 +38,6 @@ test('llama flat routes: Object definition', async (t) => {
         }
       }
       const conf = llama({
-        box: dom.window.document.getElementById('app'),
         context: {},
         routes: {
           '/': {
@@ -91,6 +92,8 @@ test('llama flat routes: Component class definition', async (t) => {
     // must be global to mimic browser behavior
     // eslint-disable-next-line no-undef
     global.window = dom.window
+    // eslint-disable-next-line no-undef
+    global.document = dom.window.document
 
     let count = 0
 
@@ -104,7 +107,6 @@ test('llama flat routes: Component class definition', async (t) => {
         }
       }
       const conf = llama({
-        box: dom.window.document.getElementById('app'),
         context: {},
         routes: {
           '/': {
@@ -159,6 +161,9 @@ test('llama flat routes: NOT FOUND', async (t) => {
     // must be global to mimic browser behavior
     // eslint-disable-next-line no-undef
     global.window = dom.window
+    // eslint-disable-next-line no-undef
+    global.document = dom.window.document
+
 
     let count = 0
 
@@ -170,7 +175,6 @@ test('llama flat routes: NOT FOUND', async (t) => {
         }
       }
       const conf = llama({
-        box: dom.window.document.getElementById('app'),
         context: {},
         eventBus,
         routes: {

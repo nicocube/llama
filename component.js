@@ -9,10 +9,7 @@
  * See the License for the specific language governing permissions and limitations under the License.
  */
 
-// JSDocs
-// eslint-disable-next-line no-unused-vars
 import EventBus from './event-bus.js'
-
 
 export default class Component {
   static LOAD = 'llama-component-load'
@@ -22,8 +19,8 @@ export default class Component {
    *
    * @param {Object} options a set of option al
    * @param {string} [options.name] name of the component to serve as source for event listeners
-   * @param {EventBus} options.eventBus to receive and send events
-   * @param {HTMLElement|ShadowRoot|string} options.box
+   * @param {EventBus} [options.eventBus] to receive and send events
+   * @param {string} [options.box]
    * @param {string|(context: object, params: object, path: string)=>{}} [options.html]
    * @param {string} [options.css]
    * @param {Object.<string,any>} [options.context]
@@ -34,8 +31,10 @@ export default class Component {
   constructor(options = {}) {
     this.id = (Math.random() * 0xFFFFFF << 0).toString(16).padStart(6, '0')
     this.name = options?.name || this.constructor.name
+    if ((typeof options?.eventBus === 'object') && ! (options?.eventBus instanceof EventBus)) throw new Error('options.eventBus must be instance of EventBus')
     this.eventBus = options?.eventBus
-    this.box = options?.box
+    if ((typeof options?.box !== 'undefined') && (typeof options.box !== 'string')) throw new Error('options.box must be of type string')
+    this.box = options?.box || 'app'
     this.html = options?.html
     this.css = options?.css
     this.context = options?.context || {}
@@ -106,36 +105,20 @@ export default class Component {
   }
 
   prepareBox() {
-    if (this.logger) this.logger.debug(`${this.name}: prepare id='${typeof this.box === 'string'
-      ? this.box
-      : this.box.host
-        ? this.box.host.id
-        : this.box.id
-    }'`)
-    // no parent
+    if (this.logger) this.logger.debug(`${this.name}.prepareBox(id='${this.box}'`)
+    // root component
     if (!this.parent) {
-      if (!(this.box instanceof window.ShadowRoot)) {
-        let tmp = this.box
-        if (typeof this.box === 'string') {
-          tmp = document.getElementById(this.box)
+      const tmp = document.getElementById(this.box)
+      if (!tmp.shadowRoot) {
+        tmp.attachShadow({ mode: 'open' })
+        while (tmp.hasChildNodes()) {
+          tmp.shadowRoot.appendChild(tmp.firstChild)
         }
-        if (!tmp.shadowRoot) {
-          tmp.attachShadow({ mode: 'open' })
-          while (tmp.hasChildNodes()) {
-            tmp.shadowRoot.appendChild(tmp.firstChild)
-          }
-        }
-        this.box = tmp.shadowRoot
       }
-      return this.box
+      return tmp.shadowRoot
     } else {
-      if (typeof this.box === 'string') {
-        const tmp = this.parent.gId(this.box)
-        if (tmp) this.box = tmp
-      }
-      return this.box
+      return this.parent.gId(this.box)
     }
-
   }
 
   populate(params, path) {
@@ -267,8 +250,10 @@ export default class Component {
    * @param {Node} box
    */
   empty(box = this.prepareBox()) {
-    while (box.hasChildNodes()) {
-      box.removeChild(box.firstChild)
+    if (box) {
+      while (box.hasChildNodes()) {
+        box.removeChild(box.firstChild)
+      }
     }
   }
 
@@ -367,7 +352,7 @@ export class HostComponent extends Component {
       if (this.logger) this.logger.debug(`${this.name}: ${sub.name}.load(${JSON.stringify(params)},${path})`)
       sub.load(params, path)
       if (sub.postLoad) {
-        if (sub.logger) this.logger.debug(`${this.name}: ${sub.name}.postLoad(${JSON.stringify(params)}, ${path} )`)
+        if (sub.logger) sub.logger.debug(`${this.name}: ${sub.name}.postLoad(${JSON.stringify(params)}, ${path} )`)
         sub.postLoad(params, path)
       }
     }

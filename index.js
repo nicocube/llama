@@ -21,8 +21,8 @@ export {
  * @typedef {Object} RouteTarget
  * @property {typeof Component} [type]
  * @property {string} [name] name of the component to serve as source for event listeners
- * @property {string|HTMLElement} [box]
- * @property {string|HTMLElement} [sub_box]
+ * @property {string} [box]
+ * @property {string} [sub_box]
  * @property {string|(context,...param)=>{}} [html]
  * @property {string} [css]
  * @property {(params: object, path: string)=>{}} [onload]
@@ -34,7 +34,7 @@ export {
  * Set all the Llama goodness together
  *
  * @param {Object} options
- * @param {HTMLDivElement} [options.box] the div we load components in
+ * @param {string} [options.box] the id of the div we load components in
  * @param {EventBus} [options.eventBus]
  * @param {Object} [options.context]
  * @param {Object.<string, typeof Component|RouteTarget>} options.routes
@@ -47,7 +47,7 @@ export default function llama(options) {
 export class LlamaConfig {
   /**
    * @param {Object} options
-   * @param {HTMLDivElement} [options.box] the div we load components in
+   * @param {string} [options.box] the id of the div we load components in
    * @param {EventBus} [options.eventBus]
    * @param {Object} [options.context]
    * @param {Object.<string, typeof Component|RouteTarget>} options.routes

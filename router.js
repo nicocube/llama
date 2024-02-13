@@ -80,6 +80,7 @@ export default class Router {
   static GO = 'router-go'
   static LAND = 'router-land'
   static NOT_FOUND = 'router-notfound'
+  static ERROR = 'router-error'
 
   /**
    *
@@ -139,36 +140,47 @@ export default class Router {
       ? window.location.hash.substring(1)
       : window.location.hash || '/'
 
-    const url_parts = []
-    let parts
-    while ((parts = urlRx.exec(path)) !== null) {
-      if (parts[1] !== '') url_parts.push(parts[1])
-    }
-
-    let parsed
-    for (const route of this.routes) {
-      parsed = route.check(url_parts)
-      if (parsed) break
-    }
-    // eslint-disable-next-line prefer-template
-    if (this.logger) this.logger.debug(`router.route() ${parsed ? 'found ' + parsed.toString() : 'not found'}`)
-
-    if (typeof parsed === 'undefined') {
-      if (this.eventBus) this.eventBus.emit(Router.LAND, Router.NOT_FOUND, { path })
-      if (Router.NOT_FOUND in this.actions) {
-        const action = this.actions[Router.NOT_FOUND]
-        if (action instanceof Component) await action.call({}, path)
-        else await action({}, path)
+    try {
+      const url_parts = []
+      let parts
+      while ((parts = urlRx.exec(path)) !== null) {
+        if (parts[1] !== '') url_parts.push(parts[1])
       }
-    } else {
-      if (this.eventBus) this.eventBus.emit(Router.LAND, parsed.params, parsed.path)
-      if (this.before_action) await this.before_action(parsed)
 
-      const action = this.actions[parsed.path]
-      if (this.logger) this.logger.debug(`router.route() action: ${action.name}`)
+      let parsed
+      for (const route of this.routes) {
+        parsed = route.check(url_parts)
+        if (parsed) break
+      }
+      // eslint-disable-next-line prefer-template
+      if (this.logger) this.logger.debug(`router.route() ${parsed ? 'found ' + parsed.toString() : 'not found'}`)
 
-      if (action instanceof Component) await action.call(parsed.params, parsed.path)
-      else await action(parsed.params, parsed.path)
+      if (typeof parsed === 'undefined') {
+        if (this.eventBus) this.eventBus.emit(Router.LAND, Router.NOT_FOUND, { path })
+        if (Router.NOT_FOUND in this.actions) {
+          const action = this.actions[Router.NOT_FOUND]
+          if (action instanceof Component) await action.call({}, path)
+          else await action({}, path)
+        }
+      } else {
+        if (this.eventBus) this.eventBus.emit(Router.LAND, parsed.params, parsed.path)
+        if (this.before_action) await this.before_action(parsed)
+
+        const action = this.actions[parsed.path]
+        if (this.logger) this.logger.debug(`router.route() action: ${action.name}`)
+
+        if (action instanceof Component) await action.call(parsed.params, parsed.path)
+        else await action(parsed.params, parsed.path)
+      }
+    } catch (error) {
+      if (this.eventBus) this.eventBus.emit(Router.LAND, Router.ERROR, { path })
+      if (Router.ERROR in this.actions) {
+        const action = this.actions[Router.ERROR]
+        if (action instanceof Component) await action.call({ error }, path)
+        else await action({ error }, path)
+      }
+      // otherwise let's it keep bubbling
+      else throw error
     }
   }
 }

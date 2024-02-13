@@ -43,11 +43,11 @@ test('Component.empty self', async (t) => {
 
     // eslint-disable-next-line no-undef
     global.window = dom.window
+    // eslint-disable-next-line no-undef
+    global.document = dom.window.document
 
     const appBox = dom.window.document.getElementById('app')
-      , component = new Component({
-        box: appBox
-      })
+      , component = new Component({})
 
     t.deepEqual(appBox.innerHTML, '<b>Hello world</b>')
 
@@ -144,20 +144,20 @@ test('Component.injectHTML string + set children to zone + gId', async (t) => {
   <div id="child00"><div id="in-child">HERE</div></div>
   <div id="child01"></div></div>
 </div>`,
-      box: document.getElementById('app'),
+      box: 'app',
       context: {},
     })
 
     component.load()
 
     const child = new Component({
-      box: component.gId('child00'),
+      box: 'child00',
     })
 
     component.addChildren(
       child,
       new Component({
-        box: component.gId('child01')
+        box: 'child01'
       })
     )
 
@@ -178,9 +178,9 @@ test('Component.unload', async (t) => {
     const dom = new JSDOM('<!DOCTYPE html><div id="app"></div>')
 
     // eslint-disable-next-line no-undef
-    global.document = dom.window.document
-    // eslint-disable-next-line no-undef
     global.window = dom.window
+    // eslint-disable-next-line no-undef
+    global.document = dom.window.document
 
     let count = 0
     const eventBus = new EventBus()
@@ -192,14 +192,13 @@ test('Component.unload', async (t) => {
   <div id="child00"><div id="in-child">HERE</div></div>
   <div id="child01"></div></div>
 </div>`,
-      box: document.getElementById('app'),
       onload() {
         if (this.logger) this.logger.log(`UT> ${this.name}.onload`)
         component.addChildren(
           new Component({
             name: 'child00',
             eventBus,
-            box: component.gId('child00'),
+            box: 'child00',
             onload() {
               if (this.logger) this.logger.log(`UT> ${this.name}.onload`)
               this.on('X', () => {
@@ -212,7 +211,7 @@ test('Component.unload', async (t) => {
           new Component({
             name: 'child01',
             eventBus,
-            box: component.gId('child01'),
+            box: 'child01',
             onload() {
               if (this.logger) this.logger.log(`UT> ${this.name}.onload`)
               this.on('X', () => {

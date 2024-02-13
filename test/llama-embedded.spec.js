@@ -685,6 +685,8 @@ test('llama with embedded routes: Component class definition root', async (t) =>
     // must be global to mimic browser behavior
     // eslint-disable-next-line no-undef
     global.window = dom.window
+    // eslint-disable-next-line no-undef
+    global.document = dom.window.document
 
     let count = 0
 
@@ -705,7 +707,6 @@ test('llama with embedded routes: Component class definition root', async (t) =>
       }
 
       const conf = llama({
-        box: dom.window.document.getElementById('app'),
         context: { plop: 'some context' },
         eventBus,
         routes: {
@@ -781,6 +782,8 @@ test('llama with embedded routes: Component class definition root and embedded',
     // must be global to mimic browser behavior
     // eslint-disable-next-line no-undef
     global.window = dom.window
+    // eslint-disable-next-line no-undef
+    global.document = dom.window.document
 
     let count = 0
 
@@ -819,7 +822,7 @@ test('llama with embedded routes: Component class definition root and embedded',
       }
 
       const conf = llama({
-        box: dom.window.document.getElementById('app'),
+        box: 'app',
         context: { plop: 'some new context' },
         eventBus,
         routes: {
