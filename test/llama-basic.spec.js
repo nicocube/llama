@@ -42,7 +42,7 @@ test('llama flat routes: Object definition', async (t) => {
         routes: {
           '/': {
             name: 'main',
-            onload() {
+            onLoad() {
               t.deepEqual(count, 0)
               count++
               if (this.logger) this.logger.log('in main')
@@ -53,7 +53,7 @@ test('llama flat routes: Object definition', async (t) => {
           [Router.NOT_FOUND]: {
             name: Router.NOT_FOUND,
             html: '404 Page not found',
-            onload() {
+            onLoad() {
               t.fail('should not be here')
               reject('wrong place')
             }
@@ -111,7 +111,7 @@ test('llama flat routes: Component class definition', async (t) => {
         routes: {
           '/': {
             name: 'main',
-            onload() {
+            onLoad() {
               t.fail('should not be here')
               reject('wrong place')
             }
@@ -120,7 +120,7 @@ test('llama flat routes: Component class definition', async (t) => {
           [Router.NOT_FOUND]: {
             name: Router.NOT_FOUND,
             html: '404 Page not found',
-            onload() {
+            onLoad() {
               t.fail('should not be here')
               reject('wrong place')
             }
@@ -180,7 +180,7 @@ test('llama flat routes: NOT FOUND', async (t) => {
         routes: {
           '/': {
             name: 'main',
-            onload() {
+            onLoad() {
               t.fail('should not be here')
               reject('wrong place')
             }
@@ -188,8 +188,8 @@ test('llama flat routes: NOT FOUND', async (t) => {
           '/other': OtherComponent,
           [Router.NOT_FOUND]: {
             name: Router.NOT_FOUND,
-            html: (ctx, params, path) => `404 Page not found: ${path}`,
-            onload() {
+            html: (params, path) => `404 Page not found: ${path}`,
+            onLoad() {
               t.deepEqual(count, 0)
               count++
               if (this.logger) this.logger.log('in not-found')

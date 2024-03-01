@@ -19,14 +19,16 @@ export default class Component {
    *
    * @param {Object} options a set of option al
    * @param {string} [options.name] name of the component to serve as source for event listeners
+   * @param {string} [options.box] the id of the HTMLElement to which we want to plug the component
    * @param {EventBus} [options.eventBus] to receive and send events
-   * @param {string} [options.box]
-   * @param {string|(context: object, params: object, path: string)=>{}} [options.html]
-   * @param {string} [options.css]
    * @param {Object.<string,any>} [options.context]
-   * @param {(params: object, path: string)=>{}} [options.onload]
-   * @param {(params: object, path: string)=>{}} [options.onPostLoad]
    * @param {Console} [options.logger] define a logger, can be {logger: console} to send on the javascript console
+   * @param {string|(params: object, path: string, this:Component)=>{}} [options.html]
+   * @param {string} [options.css]
+   * @param {(params: object, path: string)=>{}} [options.onLoad] a hook for action on load of the component (do this or overload {Component.init} method)
+   * @param {(params: object, path: string)=>{}} [options.onPostLoad] a hook for action after load of the component (do this or overload {Component.postLoad} method)
+   * @param {()=>{}} [options.onBeforeClean] a hook for action on load of the component (do this or overload {Component.init} method)
+   * @param {()=>{}} [options.onAfterClean] a hook for action on load of the component (do this or overload {Component.init} method)
    */
   constructor(options = {}) {
     this.id = (Math.random() * 0xFFFFFF << 0).toString(16).padStart(6, '0')
@@ -35,12 +37,14 @@ export default class Component {
     this.eventBus = options?.eventBus
     if ((typeof options?.box !== 'undefined') && (typeof options.box !== 'string')) throw new Error('options.box must be of type string')
     this.box = options?.box || 'app'
-    this.html = options?.html
-    this.css = options?.css
     this.context = options?.context || {}
-    this.logger = options?.logger
-    this.onload = options?.onload
-    this.onPostLoad = options?.onPostLoad
+    if (options?.logger) this.logger = options?.logger
+    if (options?.html) this.html = options.html
+    if (options?.css) this.css = options.css
+    if (options?.onLoad) this.onLoad = options?.onLoad
+    if (options?.onPostLoad) this.onPostLoad = options?.onPostLoad
+    if (options?.onBeforeClean) this.onBeforeClean = options?.onBeforeClean
+    if (options?.onAfterClean) this.onAfterClean = options?.onAfterClean
     this.children = []
     this.parent = undefined
     this.active = false
@@ -100,10 +104,15 @@ export default class Component {
   unload() {
     if (this.logger) this.logger.info(`${this.name}.unload()`)
     this.active = false
-    // remove the listeners of this component in the eventBus
+    if (this.onBeforeClean) this.onBeforeClean()
     this.clean()
+    if (this.onAfterClean) this.onAfterClean()
   }
 
+  /**
+   *
+   * @returns {ShadowRoot|HTMLElement}
+   */
   prepareBox() {
     if (this.logger) this.logger.debug(`${this.name}.prepareBox(id='${this.box}'`)
     // root component
@@ -171,7 +180,7 @@ export default class Component {
    * init the component after appending to DOM
    */
   init(params, path) {
-    if (this.onload) this.onload(params, path)
+    if (this.onLoad) this.onLoad(params, path)
   }
 
   /**
@@ -189,7 +198,10 @@ export default class Component {
     this.eventBus?.clear(this.name, (k) => k !== Component.LOAD)
     // clean the children
     this.removeChildren()
-    this.empty()
+
+    if (this.hasHTML()) {
+      this.empty()
+    }
   }
 
   /**
@@ -298,7 +310,7 @@ export default class Component {
       if (typeof this.html === 'string') {
         box.appendChild(this.fragmentFromHtml(this.html))
       } else if (typeof this.html === 'function') {
-        box.appendChild(this.fragmentFromHtml(this.html(this.context, params, path)))
+        box.appendChild(this.fragmentFromHtml(this.html(params, path, this)))
       }
     } else {
       if (this.logger) this.logger.debug(`${this.name}: no HTML injected`)

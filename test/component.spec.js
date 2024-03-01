@@ -116,7 +116,7 @@ test('Component.injectHTML function', async (t) => {
     global.document = dom.window.document
 
     const component = new Component({
-      html: (x) => `<b>Hello ${x.txt}</b>`,
+      html: (a, b, { context }) => `<b>Hello ${context.txt}</b>`,
       context: { txt: 'Plop' }
     })
     component.injectHTML(document.getElementById('app'))
@@ -192,15 +192,15 @@ test('Component.unload', async (t) => {
   <div id="child00"><div id="in-child">HERE</div></div>
   <div id="child01"></div></div>
 </div>`,
-      onload() {
-        if (this.logger) this.logger.log(`UT> ${this.name}.onload`)
+      onLoad() {
+        if (this.logger) this.logger.log(`UT> ${this.name}.onLoad`)
         component.addChildren(
           new Component({
             name: 'child00',
             eventBus,
             box: 'child00',
-            onload() {
-              if (this.logger) this.logger.log(`UT> ${this.name}.onload`)
+            onLoad() {
+              if (this.logger) this.logger.log(`UT> ${this.name}.onLoad`)
               this.on('X', () => {
                 if (this.logger) this.logger.log(`UT> ${this.name}> event X`, count)
                 if (count === 0) t.ok(true)
@@ -212,8 +212,8 @@ test('Component.unload', async (t) => {
             name: 'child01',
             eventBus,
             box: 'child01',
-            onload() {
-              if (this.logger) this.logger.log(`UT> ${this.name}.onload`)
+            onLoad() {
+              if (this.logger) this.logger.log(`UT> ${this.name}.onLoad`)
               this.on('X', () => {
                 if (this.logger) this.logger.log(`UT> ${this.name}> event X`, count)
                 if (count === 0) t.ok(true)
