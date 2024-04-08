@@ -21,8 +21,8 @@ export class Param {
   constructor(name) {
     this.name = name
   }
-  addTo(params, val) {
-    params[this.name] = val
+  addTo(args, val) {
+    args[this.name] = val
   }
 }
 
@@ -51,28 +51,28 @@ export class Path {
 
   check(parts) {
     if (parts.length === this.path_parts.length) {
-      const params = {}
+      const args = {}
       if (this.path_parts.every((v, i) => {
         if (v instanceof Param) {
-          v.addTo(params, parts[i])
+          v.addTo(args, parts[i])
           return true
         } else {
           return v === parts[i]
         }
       })) {
-        return new Parsed(this.path, params)
+        return new Parsed(this.path, args)
       }
     }
   }
 }
 
 export class Parsed {
-  constructor(path, params) {
+  constructor(path, args) {
     this.path = path
-    this.params = params
+    this.args = args
   }
   toString() {
-    return `Parsed{"${this.path}", ${JSON.stringify(this.params)}}`
+    return `Parsed{"${this.path}", ${JSON.stringify(this.args)}}`
   }
 }
 
@@ -163,14 +163,14 @@ export default class Router {
           else await action({}, path)
         }
       } else {
-        if (this.eventBus) this.eventBus.emit(Router.LAND, parsed.params, parsed.path)
+        if (this.eventBus) this.eventBus.emit(Router.LAND, parsed.args, parsed.path)
         if (this.before_action) await this.before_action(parsed)
 
         const action = this.actions[parsed.path]
         if (this.logger) this.logger.debug(`router.route() action: ${action.name}`)
 
-        if (action instanceof Component) await action.call(parsed.params, parsed.path)
-        else await action(parsed.params, parsed.path)
+        if (action instanceof Component) await action.call(parsed.args, parsed.path)
+        else await action(parsed.args, parsed.path)
       }
     } catch (error) {
       if (this.eventBus) this.eventBus.emit(Router.LAND, Router.ERROR, { path })

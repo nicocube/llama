@@ -23,10 +23,10 @@ export {
  * @property {string} [name] name of the component to serve as source for event listeners
  * @property {string} [box] the id of an HTML element the component is rendered into
  * @property {string} [sub_box] the id of an HTML element the embedded sub-component are rendered into
- * @property {string|(params: object, path: string, this:Component)=>{}} [html] a string or a function that produce a html to be injected before init
+ * @property {string|(args: object, path: string, this:Component)=>{}} [html] a string or a function that produce a html to be injected before init
  * @property {string} [css] a string of CSS to be injected
- * @property {(params: object, path: string)=>{}} [onLoad] a hook for action on load of the component
- * @property {(params: object, path: string)=>{}} [onPostLoad] a hook for action after load of the component
+ * @property {(args: object, path: string)=>{}} [onLoad] a hook for action on load of the component
+ * @property {(args: object, path: string)=>{}} [onPostLoad] a hook for action after load of the component
  * @property {()=>{}} [onBeforeClean] a hook for action on load of the component
  * @property {()=>{}} [onAfterClean] a hook for action on load of the component
  * @property {Console} [logger] define a logger, can be {logger: console} to send on the javascript console

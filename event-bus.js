@@ -47,7 +47,7 @@ export class SimpleEventBus {
   /**
    * Emit an event for a given key that are sent to every attached events listeners
    * @param {string} k the event key
-   * @param  {...any} p the optional params
+   * @param  {...any} p the optional args
    */
   emit(k, ...p) {
     if (this.logger && (!this.logger?.logFor || this.logger?.logFor(this.name))) this.logger.debug(`EventBus.emit<${this.name}>: %s`, k, ...p)
@@ -129,7 +129,7 @@ export class SequenceEventBus {
   /**
    * Emit an event for a given key that are sent to every attached events listeners
    * @param {string} k the event key
-   * @param  {...any} p the optional params
+   * @param  {...any} p the optional args
    */
   emit(k, ...p) {
     if (this.logger && (!this.logger?.logFor || this.logger?.logFor('emit'))) this.logger.debug('EventBus.emit: %s', k, ...p)

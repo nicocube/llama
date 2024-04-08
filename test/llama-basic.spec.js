@@ -188,7 +188,7 @@ test('llama flat routes: NOT FOUND', async (t) => {
           '/other': OtherComponent,
           [Router.NOT_FOUND]: {
             name: Router.NOT_FOUND,
-            html: (params, path) => `404 Page not found: ${path}`,
+            html: (args, path) => `404 Page not found: ${path}`,
             onLoad() {
               t.deepEqual(count, 0)
               count++

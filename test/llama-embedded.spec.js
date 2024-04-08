@@ -56,7 +56,7 @@ test('llama with embedded routes: pure Object definition', async (t) => {
             embed: {
               'in/:id': {
                 name: 'inside',
-                html: (params, path) => `in ${path} with ${JSON.stringify(params)}`,
+                html: (args, path) => `in ${path} with ${JSON.stringify(args)}`,
                 onLoad({ id }) {
                   t.deepEqual(count, 1)
                   t.deepEqual(id, 'plop')
@@ -145,7 +145,7 @@ test('llama with embedded routes: pure Object definition, default subroute', asy
             embed: {
               '': {
                 name: 'default',
-                html: (params, path) => `in default ${path}`,
+                html: (args, path) => `in default ${path}`,
                 onLoad() {
                   t.deepEqual(count, 1)
                   count++
@@ -155,7 +155,7 @@ test('llama with embedded routes: pure Object definition, default subroute', asy
               },
               'in/:id': {
                 name: 'inside',
-                html: (params, path) => `in ${path} with ${JSON.stringify(params)}`,
+                html: (args, path) => `in ${path} with ${JSON.stringify(args)}`,
                 onLoad() {
                   t.fail('should not be here')
                   reject('wrong place')
@@ -242,7 +242,7 @@ test('llama with embedded routes: pure Object definition, deep', async (t) => {
               'deep/:id/': {
                 name: 'deep',
                 sub_box: 'in-deep',
-                html: (params) => `<b>Deep: ${params.id}</b><div id="in-deep"></div>`,
+                html: (args) => `<b>Deep: ${args.id}</b><div id="in-deep"></div>`,
                 onLoad({ id }) {
                   t.deepEqual(count, 1)
                   t.deepEqual(id, 'plop')
@@ -252,7 +252,7 @@ test('llama with embedded routes: pure Object definition, deep', async (t) => {
                 embed: {
                   'in/:id': {
                     name: 'inside',
-                    html: (params, path) => `in ${path} with ${JSON.stringify(params)}`,
+                    html: (args, path) => `in ${path} with ${JSON.stringify(args)}`,
                     onLoad({ id }) {
                       t.deepEqual(count, 2)
                       t.deepEqual(id, 'plop')
@@ -343,7 +343,7 @@ test('llama with embedded routes: pure Object definition, change sub', async (t)
               embed: {
                 'in/:id': {
                   name: 'inside',
-                  html: (params, path) => `in ${path} with ${JSON.stringify(params)}`,
+                  html: (args, path) => `in ${path} with ${JSON.stringify(args)}`,
                   onLoad({ id }) {
                     t.deepEqual(count, 1)
                     t.deepEqual(id, 'plop')
@@ -354,7 +354,7 @@ test('llama with embedded routes: pure Object definition, change sub', async (t)
                 },
                 'sub/:id': {
                   name: 'sub',
-                  html: (params, path) => `in another ${path} with ${JSON.stringify(params)}`,
+                  html: (args, path) => `in another ${path} with ${JSON.stringify(args)}`,
                   onLoad({ id }) {
                     t.deepEqual(count, 2)
                     t.deepEqual(id, 'foo')
@@ -453,7 +453,7 @@ test('llama with embedded routes: pure Object definition, change sub, depth 2', 
                 count++
                 if (this.logger) this.logger.log('UT> in main')
               },
-              onPostLoad(params, path) {
+              onPostLoad(args, path) {
                 if (count === 3) t.deepEqual(path, '/deep/')
                 else if (count === 4) t.deepEqual(path, '/deep/sub/:id/')
                 else {
@@ -463,7 +463,7 @@ test('llama with embedded routes: pure Object definition, change sub, depth 2', 
               embed: {
                 '': {
                   name: 'default',
-                  html: (params, path) => `default page ${path} with ${JSON.stringify(params)}`,
+                  html: (args, path) => `default page ${path} with ${JSON.stringify(args)}`,
                   onLoad() {
                     t.fail('should not be here')
                     reject('wrong place')
@@ -473,14 +473,14 @@ test('llama with embedded routes: pure Object definition, change sub, depth 2', 
                   name: 'deep',
                   sub_box: 'deep-sub',
                   html: '<b>Deep</b><div id="deep-sub"></div>',
-                  onLoad(params, path) {
+                  onLoad(args, path) {
                     if (path === '/deep/') t.deepEqual(count, 1)
-                    else t.fail(`should not be here ${path} ${params}`)
+                    else t.fail(`should not be here ${path} ${args}`)
                     count++
                     if (this.logger) this.logger.log('UT> in deep')
                     resolve(conf)
                   },
-                  onPostLoad(params, path) {
+                  onPostLoad(args, path) {
                     if (count === 3) t.deepEqual(path, '/deep/')
                     else if (count === 4) t.deepEqual(path, '/deep/sub/:id/')
                     else {
@@ -490,7 +490,7 @@ test('llama with embedded routes: pure Object definition, change sub, depth 2', 
                   embed: {
                     '': {
                       name: 'inside',
-                      html: (params, path) => `inside ${path} with ${JSON.stringify(params)}`,
+                      html: (args, path) => `inside ${path} with ${JSON.stringify(args)}`,
                       onLoad() {
                         t.deepEqual(count, 2)
                         count++
@@ -500,7 +500,7 @@ test('llama with embedded routes: pure Object definition, change sub, depth 2', 
                     },
                     'sub/:id': {
                       name: 'sub',
-                      html: (params, path) => `in another ${path} with ${JSON.stringify(params)}`,
+                      html: (args, path) => `in another ${path} with ${JSON.stringify(args)}`,
                       onLoad({ id }) {
                         t.deepEqual(count, 3)
                         t.deepEqual(id, 'foo')
@@ -608,7 +608,7 @@ test('llama with embedded routes: pure Object definition, change other', async (
               embed: {
                 'in/:id': {
                   name: 'inside',
-                  html: (params, path) => `in ${path} with ${JSON.stringify(params)}`,
+                  html: (args, path) => `in ${path} with ${JSON.stringify(args)}`,
                   onLoad({ id }) {
                     t.deepEqual(count, 1)
                     t.deepEqual(id, 'plop')
@@ -619,7 +619,7 @@ test('llama with embedded routes: pure Object definition, change other', async (
                 },
                 'sub/:id': {
                   name: 'sub',
-                  html: (params, path) => `in another ${path} with ${JSON.stringify(params)}`,
+                  html: (args, path) => `in another ${path} with ${JSON.stringify(args)}`,
                   onLoad() {
                     t.fail('should not be here')
                     reject2('wrong place')
@@ -914,7 +914,7 @@ test('llama with embedded routes: Intermediate with no html', async (t) => {
                 count++
                 if (this.logger) this.logger.log('UT> in main')
               },
-              onPostLoad(params, path) {
+              onPostLoad(args, path) {
                 if (count === 3) t.deepEqual(path, '/deep/')
                 else if (count === 4) t.deepEqual(path, '/deep/sub/:id/')
                 else {
@@ -924,7 +924,7 @@ test('llama with embedded routes: Intermediate with no html', async (t) => {
               embed: {
                 '': {
                   name: 'default',
-                  html: (params, path) => `default page ${path} with ${JSON.stringify(params)}`,
+                  html: (args, path) => `default page ${path} with ${JSON.stringify(args)}`,
                   onLoad() {
                     t.fail('should not be here')
                     reject('wrong place')
@@ -932,14 +932,14 @@ test('llama with embedded routes: Intermediate with no html', async (t) => {
                 },
                 'deep': {
                   name: 'deep',
-                  onLoad(params, path) {
+                  onLoad(args, path) {
                     if (path === '/deep/') t.deepEqual(count, 1)
-                    else t.fail(`should not be here ${path} ${params}`)
+                    else t.fail(`should not be here ${path} ${args}`)
                     count++
                     if (this.logger) this.logger.log('UT> in deep')
                     resolve(conf)
                   },
-                  onPostLoad(params, path) {
+                  onPostLoad(args, path) {
                     if (count === 3) t.deepEqual(path, '/deep/')
                     else if (count === 4) t.deepEqual(path, '/deep/sub/:id/')
                     else {
@@ -949,7 +949,7 @@ test('llama with embedded routes: Intermediate with no html', async (t) => {
                   embed: {
                     '': {
                       name: 'inside',
-                      html: (params, path) => `inside ${path} with ${JSON.stringify(params)}`,
+                      html: (args, path) => `inside ${path} with ${JSON.stringify(args)}`,
                       onLoad() {
                         t.deepEqual(count, 2)
                         count++
@@ -959,7 +959,7 @@ test('llama with embedded routes: Intermediate with no html', async (t) => {
                     },
                     'sub/:id': {
                       name: 'sub',
-                      html: (params, path) => `in another ${path} with ${JSON.stringify(params)}`,
+                      html: (args, path) => `in another ${path} with ${JSON.stringify(args)}`,
                       onLoad({ id }) {
                         t.deepEqual(count, 3)
                         t.deepEqual(id, 'foo')
@@ -1064,7 +1064,7 @@ test('llama with embedded routes: Intermediate with no html and custom sub_box',
                 count++
                 if (this.logger) this.logger.log('UT> in main')
               },
-              onPostLoad(params, path) {
+              onPostLoad(args, path) {
                 if (count === 3) t.deepEqual(path, '/deep/')
                 else if (count === 4) t.deepEqual(path, '/deep/sub/:id/')
                 else {
@@ -1074,7 +1074,7 @@ test('llama with embedded routes: Intermediate with no html and custom sub_box',
               embed: {
                 '': {
                   name: 'default',
-                  html: (params, path) => `default page ${path} with ${JSON.stringify(params)}`,
+                  html: (args, path) => `default page ${path} with ${JSON.stringify(args)}`,
                   onLoad() {
                     t.fail('should not be here')
                     reject('wrong place')
@@ -1082,14 +1082,14 @@ test('llama with embedded routes: Intermediate with no html and custom sub_box',
                 },
                 'deep': {
                   name: 'deep',
-                  onLoad(params, path) {
+                  onLoad(args, path) {
                     if (path === '/deep/') t.deepEqual(count, 1)
-                    else t.fail(`should not be here ${path} ${params}`)
+                    else t.fail(`should not be here ${path} ${args}`)
                     count++
                     if (this.logger) this.logger.log('UT> in deep')
                     resolve(conf)
                   },
-                  onPostLoad(params, path) {
+                  onPostLoad(args, path) {
                     if (count === 3) t.deepEqual(path, '/deep/')
                     else if (count === 4) t.deepEqual(path, '/deep/sub/:id/')
                     else {
@@ -1099,7 +1099,7 @@ test('llama with embedded routes: Intermediate with no html and custom sub_box',
                   embed: {
                     '': {
                       name: 'inside',
-                      html: (params, path) => `inside ${path} with ${JSON.stringify(params)}`,
+                      html: (args, path) => `inside ${path} with ${JSON.stringify(args)}`,
                       onLoad() {
                         t.deepEqual(count, 2)
                         count++
@@ -1109,7 +1109,7 @@ test('llama with embedded routes: Intermediate with no html and custom sub_box',
                     },
                     'sub/:id': {
                       name: 'sub',
-                      html: (params, path) => `in another ${path} with ${JSON.stringify(params)}`,
+                      html: (args, path) => `in another ${path} with ${JSON.stringify(args)}`,
                       onLoad({ id }) {
                         t.deepEqual(count, 3)
                         t.deepEqual(id, 'foo')

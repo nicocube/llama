@@ -23,10 +23,10 @@ export default class Component {
    * @param {EventBus} [options.eventBus] to receive and send events
    * @param {Object.<string,any>} [options.context]
    * @param {Console} [options.logger] define a logger, can be {logger: console} to send on the javascript console
-   * @param {string|(params: object, path: string, this:Component)=>{}} [options.html]
+   * @param {string|(args: object, path: string, this:Component)=>{}} [options.html]
    * @param {string} [options.css]
-   * @param {(params: object, path: string)=>{}} [options.onLoad] a hook for action on load of the component (do this or overload {Component.init} method)
-   * @param {(params: object, path: string)=>{}} [options.onPostLoad] a hook for action after load of the component (do this or overload {Component.postLoad} method)
+   * @param {(args: object, path: string)=>{}} [options.onLoad] a hook for action on load of the component (do this or overload {Component.init} method)
+   * @param {(args: object, path: string)=>{}} [options.onPostLoad] a hook for action after load of the component (do this or overload {Component.postLoad} method)
    * @param {()=>{}} [options.onBeforeClean] a hook for action on load of the component (do this or overload {Component.init} method)
    * @param {()=>{}} [options.onAfterClean] a hook for action on load of the component (do this or overload {Component.init} method)
    */
@@ -56,17 +56,17 @@ export default class Component {
     if (!this.listening) {
       this.listening = true
       if (this.logger) this.logger.info(`${this.name}: listening`)
-      this.on(Component.LOAD).before((loadingComponent, params, path) => {
+      this.on(Component.LOAD).before((loadingComponent, args, path) => {
         const isNotMe = loadingComponent !== this
         const isUnloading = this.active && isNotMe
         if (this.logger) this.logger.debug(`${this.name}: unload? ${isUnloading} (active: ${this.active}, isNotMe: ${isNotMe})`)
         if (isUnloading) this.unload(path)
-      })?.do((loadingComponent, params, path) => {
+      })?.do((loadingComponent, args, path) => {
         if (loadingComponent === this) {
-          if (this.logger) this.logger.info(`${this.name}.load(${JSON.stringify(params)}, ${path} )`)
-          this.load(params, path)
-          if (this.logger) this.logger.info(`${this.name}.postLoad(${JSON.stringify(params)}, ${path} )`)
-          this.postLoad(params, path)
+          if (this.logger) this.logger.info(`${this.name}.load(${JSON.stringify(args)}, ${path} )`)
+          this.load(args, path)
+          if (this.logger) this.logger.info(`${this.name}.postLoad(${JSON.stringify(args)}, ${path} )`)
+          this.postLoad(args, path)
         }
       })
     }
@@ -75,27 +75,28 @@ export default class Component {
   /**
    * Call for loading of the component
    *
-   * @param {object} params
+   * @param {object} args
    * @param {string} path
    */
-  call(params, path) {
-    if (this.logger) this.logger.debug(`${this.name}: calling(${JSON.stringify(params)}, ${path})`)
-    this.emit(Component.LOAD, this, params, path)
+  call(args, path) {
+    if (this.logger) this.logger.debug(`${this.name}: calling(${JSON.stringify(args)}, ${path})`)
+    this.emit(Component.LOAD, this, args, path)
   }
 
   /**
    * Load component inside the box
    *
-   * @params {object} params
+   * @param {object} args
+   * @param {string} path
    */
-  load(params, path) {
+  load(args, path) {
     this.active = true
     // fill with HTML and CSS (if exists)
-    this.populate(params, path)
+    this.populate(args, path)
 
     // initiate the component
     if (this.logger) this.logger.debug(`${this.name}.init()`)
-    this.init(params, path)
+    this.init(args, path)
   }
 
   /**
@@ -130,31 +131,44 @@ export default class Component {
     }
   }
 
-  populate(params, path) {
+  /**
+   *
+   * @param {object} args
+   * @param {string} path
+   */
+  populate(args, path) {
     if (this.logger) this.logger.debug(`${this.name}.populate()`)
     // fill box with HTML if necessary
     if (this.hasHTML()) {
       const box = this.prepareBox()
       this.empty(box)
       this.injectCSS(box)
-      this.injectHTML(box, params, path)
+      this.injectHTML(box, args, path)
     }
   }
 
   /**
    *
-   * @param {object} [params]
+   * @param {object} [args]
    * @param {string} [path]
    * @param {...Component} children
   */
-  addChildren(params, path, ...children) {
-    if (path instanceof Component) children.unshift(path)
-    if (params instanceof Component) children.unshift(params)
+  addChildren(args, path, ...children) {
+    if (path instanceof Component) {
+      children.unshift(path)
+      // eslint-disable-next-line no-param-reassign
+      path = undefined
+    }
+    if (args instanceof Component) {
+      children.unshift(args)
+      // eslint-disable-next-line no-param-reassign
+      args = undefined
+    }
     children.forEach((child) => {
       child.parent = this
       this.children.push(child)
       if (this.logger) this.logger.debug(`${this.name}: ${child.name}.load()`)
-      child.load(params, path)
+      child.load(args, path)
     })
     if (this.logger) this.logger.log(`${this.name}.addChildren:`, this.children.map(x => x.name))
   }
@@ -178,16 +192,20 @@ export default class Component {
 
   /**
    * init the component after appending to DOM
+   * @param {object} args
+   * @param {string} path
    */
-  init(params, path) {
-    if (this.onLoad) this.onLoad(params, path)
+  init(args, path) {
+    if (this.onLoad) this.onLoad(args, path)
   }
 
   /**
    * activate after load
+   * @param {object} args
+   * @param {string} path
    */
-  postLoad(params, path) {
-    if (this.onPostLoad) this.onPostLoad(params, path)
+  postLoad(args, path) {
+    if (this.onPostLoad) this.onPostLoad(args, path)
   }
 
   /**
@@ -216,7 +234,7 @@ export default class Component {
   /**
    * Emit an event for a given key that are sent to every attached events listeners
    * @param {string} k the event key
-   * @param {...any} p the optional params
+   * @param {...any} p the optional args
    */
   emit(k, ...p) {
     this.eventBus?.emit(k, ...p)
@@ -303,14 +321,16 @@ export default class Component {
   /**
    * Inject component defined HTML into the box (if it exists)
    * @param {Node} box
+   * @param {object} [args]
+   * @param {string} [path]
    */
-  injectHTML(box = this.prepareBox(), params, path) {
+  injectHTML(box = this.prepareBox(), args, path) {
     if (this.html) {
       if (this.logger) this.logger.debug(`${this.name}: inject HTML (format:${typeof this.html})`)
       if (typeof this.html === 'string') {
         box.appendChild(this.fragmentFromHtml(this.html))
       } else if (typeof this.html === 'function') {
-        box.appendChild(this.fragmentFromHtml(this.html(params, path, this)))
+        box.appendChild(this.fragmentFromHtml(this.html(args, path, this)))
       }
     } else {
       if (this.logger) this.logger.debug(`${this.name}: no HTML injected`)
@@ -350,9 +370,9 @@ export class HostComponent extends Component {
     return this.getSubRoute()[path]
   }
 
-  load(params, path) {
+  load(args, path) {
     if (!this.active) {
-      super.load(params, path)
+      super.load(args, path)
     }
     if (this.logger) this.logger.debug(`${this.name}: load embedded`)
 
@@ -361,11 +381,11 @@ export class HostComponent extends Component {
       sub.parent = this
       this.children.push(sub)
       sub.listen()
-      if (this.logger) this.logger.debug(`${this.name}: ${sub.name}.load(${JSON.stringify(params)},${path})`)
-      sub.load(params, path)
+      if (this.logger) this.logger.debug(`${this.name}: ${sub.name}.load(${JSON.stringify(args)},${path})`)
+      sub.load(args, path)
       if (sub.postLoad) {
-        if (sub.logger) sub.logger.debug(`${this.name}: ${sub.name}.postLoad(${JSON.stringify(params)}, ${path} )`)
-        sub.postLoad(params, path)
+        if (sub.logger) sub.logger.debug(`${this.name}: ${sub.name}.postLoad(${JSON.stringify(args)}, ${path} )`)
+        sub.postLoad(args, path)
       }
     }
   }
