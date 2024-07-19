@@ -3,4 +3,3 @@ test/
 examples/
 coverage/
 .nyc_output/
-.eslintrc*

@@ -30,10 +30,10 @@ export default class Component {
    * @param {()=>{}} [options.onBeforeClean] a hook for action on load of the component (do this or overload {Component.init} method)
    * @param {()=>{}} [options.onAfterClean] a hook for action on load of the component (do this or overload {Component.init} method)
    */
-  constructor(options = {}) {
+  constructor (options = {}) {
     this.id = (Math.random() * 0xFFFFFF << 0).toString(16).padStart(6, '0')
     this.name = options?.name || this.constructor.name
-    if ((typeof options?.eventBus === 'object') && ! (options?.eventBus instanceof EventBus)) throw new Error('options.eventBus must be instance of EventBus')
+    if ((typeof options?.eventBus === 'object') && !(options?.eventBus instanceof EventBus)) throw new Error('options.eventBus must be instance of EventBus')
     this.eventBus = options?.eventBus
     if ((typeof options?.box !== 'undefined') && (typeof options.box !== 'string')) throw new Error('options.box must be of type string')
     this.box = options?.box || 'app'
@@ -52,7 +52,7 @@ export default class Component {
     if (this.logger) this.logger.info(`${this.name}: created, id:${this.id}`)
   }
 
-  listen() {
+  listen () {
     if (!this.listening) {
       this.listening = true
       if (this.logger) this.logger.info(`${this.name}: listening`)
@@ -78,7 +78,7 @@ export default class Component {
    * @param {object} args
    * @param {string} path
    */
-  call(args, path) {
+  call (args, path) {
     if (this.logger) this.logger.debug(`${this.name}: calling(${JSON.stringify(args)}, ${path})`)
     this.emit(Component.LOAD, this, args, path)
   }
@@ -89,7 +89,7 @@ export default class Component {
    * @param {object} args
    * @param {string} path
    */
-  load(args, path) {
+  load (args, path) {
     this.active = true
     // fill with HTML and CSS (if exists)
     this.populate(args, path)
@@ -102,7 +102,7 @@ export default class Component {
   /**
    * Unload component
    */
-  unload() {
+  unload () {
     if (this.logger) this.logger.info(`${this.name}.unload()`)
     this.active = false
     if (this.onBeforeClean) this.onBeforeClean()
@@ -114,7 +114,7 @@ export default class Component {
    *
    * @returns {ShadowRoot|HTMLElement}
    */
-  prepareBox() {
+  prepareBox () {
     if (this.logger) this.logger.debug(`${this.name}.prepareBox(id='${this.box}'`)
     // root component
     if (!this.parent) {
@@ -136,7 +136,7 @@ export default class Component {
    * @param {object} args
    * @param {string} path
    */
-  populate(args, path) {
+  populate (args, path) {
     if (this.logger) this.logger.debug(`${this.name}.populate()`)
     // fill box with HTML if necessary
     if (this.hasHTML()) {
@@ -153,7 +153,7 @@ export default class Component {
    * @param {string} [path]
    * @param {...Component} children
   */
-  addChildren(args, path, ...children) {
+  addChildren (args, path, ...children) {
     if (path instanceof Component) {
       children.unshift(path)
       // eslint-disable-next-line no-param-reassign
@@ -177,7 +177,7 @@ export default class Component {
    *
    * @param {...Component} children
   */
-  removeChildren(...children) {
+  removeChildren (...children) {
     // eslint-disable-next-line no-param-reassign
     if (children.length === 0) children = this.children.slice()
     if (this.logger) this.logger.log(`${this.name}.removeChildren:`, this.children.map(x => x.name))
@@ -195,7 +195,7 @@ export default class Component {
    * @param {object} args
    * @param {string} path
    */
-  init(args, path) {
+  init (args, path) {
     if (this.onLoad) this.onLoad(args, path)
   }
 
@@ -204,14 +204,14 @@ export default class Component {
    * @param {object} args
    * @param {string} path
    */
-  postLoad(args, path) {
+  postLoad (args, path) {
     if (this.onPostLoad) this.onPostLoad(args, path)
   }
 
   /**
    * clean the component after removing from DOM
    */
-  clean() {
+  clean () {
     // remove the listeners of this component in the eventBus
     this.eventBus?.clear(this.name, (k) => k !== Component.LOAD)
     // clean the children
@@ -227,7 +227,7 @@ export default class Component {
    * @param {string|string[]} e the event(s) key(s) to attach the listener
    * @param {(...r) => {}} [f] the listener function
    */
-  on(e, f) {
+  on (e, f) {
     return this.eventBus?.on(this.name, e, f)
   }
 
@@ -236,7 +236,7 @@ export default class Component {
    * @param {string} k the event key
    * @param {...any} p the optional args
    */
-  emit(k, ...p) {
+  emit (k, ...p) {
     this.eventBus?.emit(k, ...p)
   }
 
@@ -244,12 +244,11 @@ export default class Component {
    * @param {string} id
    * @returns {HTMLElement}
    */
-  gId(id) {
+  gId (id) {
     if (this.parent) {
       if (this.logger) this.logger.debug(`${this.name}: gId search in parent: ${this.parent.name} (${id})`)
       return this.parent.gId(id)
-    }
-    else {
+    } else {
       const box = this.prepareBox()
       if (this.logger) this.logger.debug(`${this.name}: gId (${id})`)
       return box.getElementById(id)
@@ -261,25 +260,23 @@ export default class Component {
    * @param {*} evt
    * @param {*} cb
    */
-  addEvtById(id, evt, cb) {
+  addEvtById (id, evt, cb) {
     this.gId(id)?.addEventListener(evt, cb)
   }
-
 
   /**
    * @returns {boolean}
    */
-  hasHTML() {
+  hasHTML () {
     if (this.logger) this.logger.debug(`${this.name}: has HTML? ${typeof this.html !== 'undefined'}`)
     return (typeof this.html !== 'undefined')
   }
-
 
   /**
    * Clear the box contents
    * @param {Node} box
    */
-  empty(box = this.prepareBox()) {
+  empty (box = this.prepareBox()) {
     if (box) {
       while (box.hasChildNodes()) {
         box.removeChild(box.firstChild)
@@ -293,21 +290,20 @@ export default class Component {
    * @param {string} html some HTML code
    * @returns {DocumentFragment} the generated DOM Element
    */
-  fragmentFromHtml(html) {
+  fragmentFromHtml (html) {
     const fragment = document.createDocumentFragment()
-      , template = document.createElement('template')
+    const template = document.createElement('template')
     template.innerHTML = html.trim() // Never return a text node of whitespace as the result
     // template.content.childNodes.forEach((node) => fragment.append(node))
     fragment.append(...template.content.childNodes)
     return fragment
   }
 
-
   /**
    * Inject component defined CSS into the box (if it exists)
    * @param {Node} box
    */
-  injectCSS(box = this.prepareBox()) {
+  injectCSS (box = this.prepareBox()) {
     if (this.css) {
       const style = document.createElement('style')
       style.textContent = this.css
@@ -324,7 +320,7 @@ export default class Component {
    * @param {object} [args]
    * @param {string} [path]
    */
-  injectHTML(box = this.prepareBox(), args, path) {
+  injectHTML (box = this.prepareBox(), args, path) {
     if (this.html) {
       if (this.logger) this.logger.debug(`${this.name}: inject HTML (format:${typeof this.html})`)
       if (typeof this.html === 'string') {
@@ -337,18 +333,17 @@ export default class Component {
     }
   }
 
-  toString() {
+  toString () {
     return `${this.constructor.name}{ ${this.name} }`
   }
 }
 
 export class HostComponent extends Component {
-
   /**
    *
    * @param {Object.<string, number>} subRoute
    */
-  setSubRoute(subRoute) {
+  setSubRoute (subRoute) {
     this.subRoute = subRoute
     Object.values(this.subRoute).forEach((sub) => {
       sub.parent = this
@@ -362,15 +357,15 @@ export class HostComponent extends Component {
     if (this.logger) this.logger.debug(`${this.name}.subRoute:`, Object.fromEntries(Object.entries(subRoute).map(([p, x]) => ([p, x.name]))))
   }
 
-  getSubRoute() {
+  getSubRoute () {
     return this.subRoute
   }
 
-  getSubComponent(path) {
+  getSubComponent (path) {
     return this.getSubRoute()[path]
   }
 
-  load(args, path) {
+  load (args, path) {
     if (!this.active) {
       super.load(args, path)
     }
@@ -390,8 +385,8 @@ export class HostComponent extends Component {
     }
   }
 
-  unload(path) {
-    if (! this.parent) super.unload()
+  unload (path) {
+    if (!this.parent) super.unload()
     else {
       const sub = this.getSubComponent(path)
       if (!sub) {
@@ -401,5 +396,4 @@ export class HostComponent extends Component {
       }
     }
   }
-
 }

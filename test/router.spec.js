@@ -34,7 +34,7 @@ test('path.check', async (t) => {
   try {
     const path = Path.build('/plop/:id')
 
-    t.deepEqual(path.check(['plop', '42']), new Parsed('/plop/:id', { 'id': '42' }))
+    t.deepEqual(path.check(['plop', '42']), new Parsed('/plop/:id', { id: '42' }))
     t.deepEqual(path.check(['test', 'test']), undefined)
   } catch (e) {
     t.fail(e.stack)
@@ -84,7 +84,6 @@ test('Router.route', async (t) => {
     // clean after usage
     // eslint-disable-next-line no-undef
     delete global.window
-
   } catch (e) {
     t.fail(e.stack)
   } finally {
@@ -92,4 +91,3 @@ test('Router.route', async (t) => {
     t.end()
   }
 })
-

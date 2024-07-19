@@ -43,7 +43,7 @@ export {
  * @param {Object.<string, typeof Component|RouteTarget>} options.routes
  * @param {Console} [options.logger] define a logger, can be {logger: console} to send on the javascript console
  */
-export default function llama(options) {
+export default function llama (options) {
   return new LlamaConfig(options).buildRouter()
 }
 
@@ -56,7 +56,7 @@ export class LlamaConfig {
    * @param {Object.<string, typeof Component|RouteTarget>} options.routes
    * @param {Console} [options.logger] define a logger, can be {logger: console} to send on the javascript console
    */
-  constructor(options) {
+  constructor (options) {
     if (!('routes' in options)) throw new Error('options.routes is compulsory')
 
     this.routes = options.routes
@@ -70,25 +70,25 @@ export class LlamaConfig {
     this.options = options
   }
 
-  buildRouter() {
+  buildRouter () {
     const router = new Router(this.eventBus, this.addLogger())
 
-    for (const [path, target] of Object.entries(this.routes)) {
-      if (typeof target === 'object') {
-        const type = target.type || (!('embed' in target) ? Component : HostComponent)
-        const opt = this.targetOpt(target)
+    for (const [path, Target] of Object.entries(this.routes)) {
+      if (typeof Target === 'object') {
+        const Type = Target.type || (!('embed' in Target) ? Component : HostComponent)
+        const opt = this.targetOpt(Target)
 
         if (this.logger) this.logger.debug(`adding root component ${path}`)
 
-        const component = new type(opt)
-        if (('embed' in target) && !(component instanceof HostComponent)) throw new Error('llama.host.component.must.be.type.HostComponent')
+        const component = new Type(opt)
+        if (('embed' in Target) && !(component instanceof HostComponent)) throw new Error('llama.host.component.must.be.type.HostComponent')
 
         router.on(path, component)
 
-        if ('embed' in target) {
-          const recOpt = Object.assign(this.basicOpts(), this.extractFieldIfExists(target, 'sub_box'), this.addLogger({ o: opt }))
+        if ('embed' in Target) {
+          const recOpt = Object.assign(this.basicOpts(), this.extractFieldIfExists(Target, 'sub_box'), this.addLogger({ o: opt }))
 
-          const subRoute = this.recBuildEmbedded(path, target.embed, recOpt)
+          const subRoute = this.recBuildEmbedded(path, Target.embed, recOpt)
           component.setSubRoute(subRoute)
           for (const p of this.flattenSubRoute(subRoute)) {
             router.on(p, component)
@@ -96,41 +96,40 @@ export class LlamaConfig {
         }
       } else {
         if (this.logger) this.logger.debug(`adding root component ${path}`)
-        router.on(path, new target(this.targetOpt({})))
+        router.on(path, new Target(this.targetOpt({})))
       }
     }
 
     return router
   }
 
-
-  recBuildEmbedded(path, embed, opt) {
+  recBuildEmbedded (path, embed, opt) {
     const res = {}
-    for (const [p, t] of Object.entries(embed)) {
+    for (const [p, T] of Object.entries(embed)) {
       const subPath = `${path}/${p}/`.replace(/\/{2,}/g, '/')
 
       if (this.logger) this.logger.debug(`adding sub component ${subPath}`)
-      const box = t.box || opt.sub_box || 'sub'
-        , eventBus = opt.eventBus
-        , context = opt.context
+      const box = T.box || opt.sub_box || 'sub'
+      const eventBus = opt.eventBus
+      const context = opt.context
 
-      if (typeof t === 'object') {
-        const subOpt = this.targetOpt(t, opt, { box, eventBus, context })
+      if (typeof T === 'object') {
+        const subOpt = this.targetOpt(T, opt, { box, eventBus, context })
 
-        const type = t.type || (!('embed' in t) ? Component : HostComponent)
-          , component = new type(subOpt)
+        const Type = T.type || (!('embed' in T) ? Component : HostComponent)
+        const component = new Type(subOpt)
 
-        if ('embed' in t) {
+        if ('embed' in T) {
           if (!(component instanceof HostComponent)) throw new Error('llama.host.component.must.be.type.HostComponent')
 
           const recOpt = Object.assign(
             { box, eventBus, context },
             this.extractFieldIfExists(opt, 'sub_box'),
-            this.extractFieldIfExists(t, 'sub_box'),
+            this.extractFieldIfExists(T, 'sub_box'),
             this.addLogger({ o: subOpt })
           )
 
-          const subRoute = this.recBuildEmbedded(subPath, t.embed, recOpt)
+          const subRoute = this.recBuildEmbedded(subPath, T.embed, recOpt)
           component.setSubRoute(subRoute)
         }
 
@@ -138,14 +137,13 @@ export class LlamaConfig {
       } else {
         const subOpt = this.targetOpt({}, opt, { box, eventBus, context })
 
-        res[subPath] = new t(subOpt)
+        res[subPath] = new T(subOpt)
       }
-
     }
     return res
   }
 
-  flattenSubRoute(subRoute, res = new Set()) {
+  flattenSubRoute (subRoute, res = new Set()) {
     for (const [p, t] of Object.entries(subRoute)) {
       if (!(t instanceof HostComponent)) {
         res.add(p)
@@ -156,25 +154,20 @@ export class LlamaConfig {
     return res
   }
 
-  targetOpt(target, opt = this, altOpts = undefined) {
+  targetOpt (target, opt = this, altOpts = undefined) {
     return Object.assign({}, target, altOpts || this.basicOpts(), this.addLogger({ o: opt, cond: !('logger' in target) }))
   }
 
-  basicOpts() {
+  basicOpts () {
     const { box, eventBus, context } = this
     return { box, eventBus, context }
   }
 
-  addLogger({ o = this, cond = true } = {}) {
+  addLogger ({ o = this, cond = true } = {}) {
     return this.extractFieldIfExists(o, 'logger', cond)
   }
-  extractFieldIfExists(o, field, cond = true) {
+
+  extractFieldIfExists (o, field, cond = true) {
     return (field in o) && o[field] && cond ? { [field]: o[field] } : {}
   }
 }
-
-
-
-
-
-

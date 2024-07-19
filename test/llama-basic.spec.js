@@ -19,7 +19,7 @@ import llama, { Component, EventBus, Router } from '../index.js'
 test('llama flat routes: Object definition', async (t) => {
   try {
     const dom = new JSDOM('<!DOCTYPE html><div id="app"><b>Hello world</b></div>', {
-      url: 'http://localhost/#/',
+      url: 'http://localhost/#/'
     })
 
     // must be global to mimic browser behavior
@@ -32,9 +32,9 @@ test('llama flat routes: Object definition', async (t) => {
 
     const router = await new Promise((resolve, reject) => {
       class OtherComponent extends Component {
-        init() {
+        init () {
           t.fail('should not be here')
-          reject('wrong place')
+          reject(new Error('wrong place'))
         }
       }
       const conf = llama({
@@ -42,7 +42,7 @@ test('llama flat routes: Object definition', async (t) => {
         routes: {
           '/': {
             name: 'main',
-            onLoad() {
+            onLoad () {
               t.deepEqual(count, 0)
               count++
               if (this.logger) this.logger.log('in main')
@@ -53,12 +53,12 @@ test('llama flat routes: Object definition', async (t) => {
           [Router.NOT_FOUND]: {
             name: Router.NOT_FOUND,
             html: '404 Page not found',
-            onLoad() {
+            onLoad () {
               t.fail('should not be here')
-              reject('wrong place')
+              reject(new Error('wrong place'))
             }
-          },
-        },
+          }
+        }
         // logger: console
       })
       conf.run()
@@ -74,7 +74,6 @@ test('llama flat routes: Object definition', async (t) => {
     // clean after usage
     // eslint-disable-next-line no-undef
     delete global.window
-
   } catch (e) {
     t.fail(e.stack)
   } finally {
@@ -86,7 +85,7 @@ test('llama flat routes: Object definition', async (t) => {
 test('llama flat routes: Component class definition', async (t) => {
   try {
     const dom = new JSDOM('<!DOCTYPE html><div id="app"><b>Hello world</b></div>', {
-      url: 'http://localhost/#/other',
+      url: 'http://localhost/#/other'
     })
 
     // must be global to mimic browser behavior
@@ -99,7 +98,7 @@ test('llama flat routes: Component class definition', async (t) => {
 
     const router = await new Promise((resolve, reject) => {
       class OtherComponent extends Component {
-        init() {
+        init () {
           t.deepEqual(count, 0)
           count++
           if (this.logger) this.logger.log('in other')
@@ -111,21 +110,21 @@ test('llama flat routes: Component class definition', async (t) => {
         routes: {
           '/': {
             name: 'main',
-            onLoad() {
+            onLoad () {
               t.fail('should not be here')
-              reject('wrong place')
+              reject(new Error('wrong place'))
             }
           },
           '/other': OtherComponent,
           [Router.NOT_FOUND]: {
             name: Router.NOT_FOUND,
             html: '404 Page not found',
-            onLoad() {
+            onLoad () {
               t.fail('should not be here')
-              reject('wrong place')
+              reject(new Error('wrong place'))
             }
-          },
-        },
+          }
+        }
         // logger: console
       })
       conf.run()
@@ -141,7 +140,6 @@ test('llama flat routes: Component class definition', async (t) => {
     // clean after usage
     // eslint-disable-next-line no-undef
     delete global.window
-
   } catch (e) {
     t.fail(e.stack)
   } finally {
@@ -150,11 +148,10 @@ test('llama flat routes: Component class definition', async (t) => {
   }
 })
 
-
 test('llama flat routes: NOT FOUND', async (t) => {
   try {
     const dom = new JSDOM('<!DOCTYPE html><div id="app"><b>Hello world</b></div>', {
-      url: 'http://localhost/#/XCVB',
+      url: 'http://localhost/#/XCVB'
     })
     const eventBus = new EventBus()
 
@@ -164,14 +161,13 @@ test('llama flat routes: NOT FOUND', async (t) => {
     // eslint-disable-next-line no-undef
     global.document = dom.window.document
 
-
     let count = 0
 
     const router = await new Promise((resolve, reject) => {
       class OtherComponent extends Component {
-        init() {
+        init () {
           t.fail('should not be here')
-          reject('wrong place')
+          reject(new Error('wrong place'))
         }
       }
       const conf = llama({
@@ -180,23 +176,23 @@ test('llama flat routes: NOT FOUND', async (t) => {
         routes: {
           '/': {
             name: 'main',
-            onLoad() {
+            onLoad () {
               t.fail('should not be here')
-              reject('wrong place')
+              reject(new Error('wrong place'))
             }
           },
           '/other': OtherComponent,
           [Router.NOT_FOUND]: {
             name: Router.NOT_FOUND,
             html: (args, path) => `404 Page not found: ${path}`,
-            onLoad() {
+            onLoad () {
               t.deepEqual(count, 0)
               count++
               if (this.logger) this.logger.log('in not-found')
               resolve(conf)
             }
-          },
-        },
+          }
+        }
         // logger: console
       })
       conf.run()
@@ -214,7 +210,6 @@ test('llama flat routes: NOT FOUND', async (t) => {
     // clean after usage
     // eslint-disable-next-line no-undef
     delete global.window
-
   } catch (e) {
     t.fail(e.stack)
   } finally {

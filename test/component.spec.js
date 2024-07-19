@@ -47,7 +47,7 @@ test('Component.empty self', async (t) => {
     global.document = dom.window.document
 
     const appBox = dom.window.document.getElementById('app')
-      , component = new Component({})
+    const component = new Component({})
 
     t.deepEqual(appBox.innerHTML, '<b>Hello world</b>')
 
@@ -76,7 +76,6 @@ test('Component.injectCSS', async (t) => {
     component.injectCSS(document.getElementById('app'))
 
     t.deepEqual(dom.window.document.getElementById('app').innerHTML, '<b>Hello world</b><style>.plop { color: red; }</style>')
-
   } catch (e) {
     t.fail(e.stack)
   } finally {
@@ -99,7 +98,6 @@ test('Component.injectHTML string', async (t) => {
     component.injectHTML(document.getElementById('app'))
 
     t.deepEqual(dom.window.document.getElementById('app').innerHTML, '<b>Hello world</b>')
-
   } catch (e) {
     t.fail(e.stack)
   } finally {
@@ -145,13 +143,13 @@ test('Component.injectHTML string + set children to zone + gId', async (t) => {
   <div id="child01"></div></div>
 </div>`,
       box: 'app',
-      context: {},
+      context: {}
     })
 
     component.load()
 
     const child = new Component({
-      box: 'child00',
+      box: 'child00'
     })
 
     component.addChildren(
@@ -172,7 +170,6 @@ test('Component.injectHTML string + set children to zone + gId', async (t) => {
   }
 })
 
-
 test('Component.unload', async (t) => {
   try {
     const dom = new JSDOM('<!DOCTYPE html><div id="app"></div>')
@@ -192,14 +189,14 @@ test('Component.unload', async (t) => {
   <div id="child00"><div id="in-child">HERE</div></div>
   <div id="child01"></div></div>
 </div>`,
-      onLoad() {
+      onLoad () {
         if (this.logger) this.logger.log(`UT> ${this.name}.onLoad`)
         component.addChildren(
           new Component({
             name: 'child00',
             eventBus,
             box: 'child00',
-            onLoad() {
+            onLoad () {
               if (this.logger) this.logger.log(`UT> ${this.name}.onLoad`)
               this.on('X', () => {
                 if (this.logger) this.logger.log(`UT> ${this.name}> event X`, count)
@@ -212,7 +209,7 @@ test('Component.unload', async (t) => {
             name: 'child01',
             eventBus,
             box: 'child01',
-            onLoad() {
+            onLoad () {
               if (this.logger) this.logger.log(`UT> ${this.name}.onLoad`)
               this.on('X', () => {
                 if (this.logger) this.logger.log(`UT> ${this.name}> event X`, count)
@@ -248,7 +245,6 @@ test('Component.unload', async (t) => {
     await new Promise((resolve) => {
       eventBus.emit('X', resolve)
     })
-
   } catch (e) {
     t.fail(e.stack)
   } finally {

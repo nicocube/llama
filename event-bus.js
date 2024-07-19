@@ -17,7 +17,7 @@ export class SimpleEventBus {
    * @param {(e:Error) => {}} [options.catcher] define an error catching function
    * @param {Console} [options.logger] define a logger, can be {logger: console} to send on the javascript console
    */
-  constructor(options = {}) {
+  constructor (options = {}) {
     this._hook = new Map()
     this.name = options?.name || 'emit'
     this.catcher = options?.catcher
@@ -30,8 +30,8 @@ export class SimpleEventBus {
    * @param {string|string[]} e the event(s) key(s) to attach the listener
    * @param {(...r) => {}} f the listener function
    */
-  on(s, e, f) {
-    if (this.logger && (!this.logger?.logFor || this.logger?.logFor('on'))) this.logger.debug(`EventBus.on<${this.name}>: %s / %s`, s, e /*, f.toString()*/)
+  on (s, e, f) {
+    if (this.logger && (!this.logger?.logFor || this.logger?.logFor('on'))) this.logger.debug(`EventBus.on<${this.name}>: %s / %s`, s, e /*, f.toString() */)
     const l = (e instanceof Array) ? e : [e]
     l.forEach((k) => {
       let d = this._hook.get(k)
@@ -43,13 +43,12 @@ export class SimpleEventBus {
     })
   }
 
-
   /**
    * Emit an event for a given key that are sent to every attached events listeners
    * @param {string} k the event key
    * @param  {...any} p the optional args
    */
-  emit(k, ...p) {
+  emit (k, ...p) {
     if (this.logger && (!this.logger?.logFor || this.logger?.logFor(this.name))) this.logger.debug(`EventBus.emit<${this.name}>: %s`, k, ...p)
     setTimeout(() => {
       try {
@@ -61,7 +60,7 @@ export class SimpleEventBus {
     }, 1)
   }
 
-  _run(k, p) {
+  _run (k, p) {
     const handlers = this._hook.get(k)
     if (handlers) {
       Object.entries(handlers).forEach(([s, f]) => {
@@ -76,27 +75,28 @@ export class SimpleEventBus {
    * @param {string} s the name of the source to clear events for
    * @param {(k:string)=> boolean} [filter] filter the keys that should be cleared (return true for keys to be cleared)
    */
-  clear(s, filter = () => true) {
+  clear (s, filter = () => true) {
     if (this.logger && (!this.logger?.logFor || this.logger?.logFor('clear'))) this.logger.debug(`EventBus.clear<${this.name}>: %s`, s)
     for (const [k, d] of this._hook.entries()) { if ((s in d) && filter(k)) delete d[s] }
   }
 }
 
-
 export class SequenceHandlerLoader {
-  constructor(sqEventBus, src, evt) {
+  constructor (sqEventBus, src, evt) {
     Object.assign(this, { sqEventBus, src, evt })
   }
 
-  before(f) {
+  before (f) {
     this.sqEventBus._before.on(this.src, this.evt, f)
     return this
   }
-  do(f) {
+
+  do (f) {
     this.sqEventBus._emit.on(this.src, this.evt, f)
     return this
   }
-  after(f) {
+
+  after (f) {
     this.sqEventBus._after.on(this.src, this.evt, f)
     return this
   }
@@ -109,7 +109,7 @@ export class SequenceEventBus {
    * @param {(e:Error, ...r) => {}} [options.catcher] define an error catching function
    * @param {Console} [options.logger] define a logger, can be {logger: console} to send on the javascript console
    */
-  constructor(options = {}) {
+  constructor (options = {}) {
     this._before = new SimpleEventBus({ name: 'before', catcher: options?.catcher, logger: options?.logger })
     this._emit = new SimpleEventBus({ name: 'emit', catcher: options?.catcher, logger: options?.logger })
     this._after = new SimpleEventBus({ name: 'after', catcher: options?.catcher, logger: options?.logger })
@@ -121,7 +121,7 @@ export class SequenceEventBus {
    * @param {string|string[]} e the event(s) key(s) to attach the listener
    * @param {(...r) => {}} [f] the listener function
    */
-  on(s, e, f) {
+  on (s, e, f) {
     if (f) this._emit.on(s, e, f)
     return new SequenceHandlerLoader(this, s, e)
   }
@@ -131,7 +131,7 @@ export class SequenceEventBus {
    * @param {string} k the event key
    * @param  {...any} p the optional args
    */
-  emit(k, ...p) {
+  emit (k, ...p) {
     if (this.logger && (!this.logger?.logFor || this.logger?.logFor('emit'))) this.logger.debug('EventBus.emit: %s', k, ...p)
     setTimeout(() => {
       this._before._run(k, p)
@@ -145,7 +145,7 @@ export class SequenceEventBus {
    * @param {string} s the name of the source to clear events for
    * @param {(k:string)=> boolean} [filter] filter the keys that should be cleared (return true for keys to be cleared)
    */
-  clear(s, filter = () => true) {
+  clear (s, filter = () => true) {
     if (this.logger && (!this.logger?.logFor || this.logger?.logFor('clear'))) this.logger.debug('EventBus.clear: %s', s)
     this._before.clear(s, filter)
     this._emit.clear(s, filter)

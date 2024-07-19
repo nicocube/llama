@@ -17,11 +17,10 @@ import { JSDOM } from 'jsdom'
 import llama, { Component, EventBus, Router } from '../index.js'
 import { HostComponent } from '../component.js'
 
-
 test('llama with embedded routes: pure Object definition', async (t) => {
   try {
     const dom = new JSDOM('<!DOCTYPE html><div id="app"><b>Hello world</b></div>', {
-      url: 'http://localhost/#/in/plop',
+      url: 'http://localhost/#/in/plop'
     })
     const eventBus = new EventBus()
 
@@ -35,9 +34,9 @@ test('llama with embedded routes: pure Object definition', async (t) => {
 
     const router = await new Promise((resolve, reject) => {
       class OtherComponent extends Component {
-        init() {
+        init () {
           t.fail('should not be here')
-          reject('wrong place')
+          reject(new Error('wrong place'))
         }
       }
       const conf = llama({
@@ -48,7 +47,7 @@ test('llama with embedded routes: pure Object definition', async (t) => {
           '/': {
             name: 'main',
             html: '<b>Main</b><div id="sub"></div>',
-            onLoad() {
+            onLoad () {
               t.deepEqual(count, 0)
               count++
               if (this.logger) this.logger.log('in main')
@@ -57,7 +56,7 @@ test('llama with embedded routes: pure Object definition', async (t) => {
               'in/:id': {
                 name: 'inside',
                 html: (args, path) => `in ${path} with ${JSON.stringify(args)}`,
-                onLoad({ id }) {
+                onLoad ({ id }) {
                   t.deepEqual(count, 1)
                   t.deepEqual(id, 'plop')
                   count++
@@ -72,12 +71,12 @@ test('llama with embedded routes: pure Object definition', async (t) => {
             name: Router.NOT_FOUND,
             type: Component,
             html: '404 Page not found',
-            onLoad() {
+            onLoad () {
               t.fail('should not be here')
-              reject('wrong place')
+              reject(new Error('wrong place'))
             }
-          },
-        },
+          }
+        }
         // logger: console
       })
       conf.run()
@@ -98,7 +97,6 @@ test('llama with embedded routes: pure Object definition', async (t) => {
     // clean after usage
     // eslint-disable-next-line no-undef
     delete global.window
-
   } catch (e) {
     t.fail(e.stack)
   } finally {
@@ -110,7 +108,7 @@ test('llama with embedded routes: pure Object definition', async (t) => {
 test('llama with embedded routes: pure Object definition, default subroute', async (t) => {
   try {
     const dom = new JSDOM('<!DOCTYPE html><div id="app"><b>Hello world</b></div>', {
-      url: 'http://localhost/#/',
+      url: 'http://localhost/#/'
     })
     const eventBus = new EventBus()
 
@@ -124,9 +122,9 @@ test('llama with embedded routes: pure Object definition, default subroute', asy
 
     const router = await new Promise((resolve, reject) => {
       class OtherComponent extends Component {
-        init() {
+        init () {
           t.fail('should not be here')
-          reject('wrong place')
+          reject(new Error('wrong place'))
         }
       }
       const conf = llama({
@@ -137,7 +135,7 @@ test('llama with embedded routes: pure Object definition, default subroute', asy
           '/': {
             name: 'main',
             html: '<b>Main</b><div id="sub"></div>',
-            onLoad() {
+            onLoad () {
               t.deepEqual(count, 0)
               count++
               if (this.logger) this.logger.log('in main')
@@ -146,7 +144,7 @@ test('llama with embedded routes: pure Object definition, default subroute', asy
               '': {
                 name: 'default',
                 html: (args, path) => `in default ${path}`,
-                onLoad() {
+                onLoad () {
                   t.deepEqual(count, 1)
                   count++
                   if (this.logger) this.logger.log('in plop')
@@ -156,9 +154,9 @@ test('llama with embedded routes: pure Object definition, default subroute', asy
               'in/:id': {
                 name: 'inside',
                 html: (args, path) => `in ${path} with ${JSON.stringify(args)}`,
-                onLoad() {
+                onLoad () {
                   t.fail('should not be here')
-                  reject('wrong place')
+                  reject(new Error('wrong place'))
                 }
               }
             }
@@ -168,12 +166,12 @@ test('llama with embedded routes: pure Object definition, default subroute', asy
             name: Router.NOT_FOUND,
             type: Component,
             html: '404 Page not found',
-            onLoad() {
+            onLoad () {
               t.fail('should not be here')
-              reject('wrong place')
+              reject(new Error('wrong place'))
             }
-          },
-        },
+          }
+        }
         // logger: console
       })
       conf.run()
@@ -194,7 +192,6 @@ test('llama with embedded routes: pure Object definition, default subroute', asy
     // clean after usage
     // eslint-disable-next-line no-undef
     delete global.window
-
   } catch (e) {
     t.fail(e.stack)
   } finally {
@@ -206,7 +203,7 @@ test('llama with embedded routes: pure Object definition, default subroute', asy
 test('llama with embedded routes: pure Object definition, deep', async (t) => {
   try {
     const dom = new JSDOM('<!DOCTYPE html><div id="app"><b>Hello world</b></div>', {
-      url: 'http://localhost/#/deep/foo/in/plop',
+      url: 'http://localhost/#/deep/foo/in/plop'
     })
     const eventBus = new EventBus()
 
@@ -220,9 +217,9 @@ test('llama with embedded routes: pure Object definition, deep', async (t) => {
 
     const router = await new Promise((resolve, reject) => {
       class OtherComponent extends Component {
-        init() {
+        init () {
           t.fail('should not be here')
-          reject('wrong place')
+          reject(new Error('wrong place'))
         }
       }
       const conf = llama({
@@ -233,7 +230,7 @@ test('llama with embedded routes: pure Object definition, deep', async (t) => {
             name: 'main',
             sub_box: 'my-sub',
             html: '<b>Main</b><div id="my-sub"></div>',
-            onLoad() {
+            onLoad () {
               t.deepEqual(count, 0)
               count++
               if (this.logger) this.logger.log('in main')
@@ -243,7 +240,7 @@ test('llama with embedded routes: pure Object definition, deep', async (t) => {
                 name: 'deep',
                 sub_box: 'in-deep',
                 html: (args) => `<b>Deep: ${args.id}</b><div id="in-deep"></div>`,
-                onLoad({ id }) {
+                onLoad ({ id }) {
                   t.deepEqual(count, 1)
                   t.deepEqual(id, 'plop')
                   count++
@@ -253,7 +250,7 @@ test('llama with embedded routes: pure Object definition, deep', async (t) => {
                   'in/:id': {
                     name: 'inside',
                     html: (args, path) => `in ${path} with ${JSON.stringify(args)}`,
-                    onLoad({ id }) {
+                    onLoad ({ id }) {
                       t.deepEqual(count, 2)
                       t.deepEqual(id, 'plop')
                       count++
@@ -270,12 +267,12 @@ test('llama with embedded routes: pure Object definition, deep', async (t) => {
             name: Router.NOT_FOUND,
             type: Component,
             html: '404 Page not found',
-            onLoad() {
+            onLoad () {
               t.fail('should not be here')
-              reject('wrong place')
+              reject(new Error('wrong place'))
             }
-          },
-        },
+          }
+        }
         // logger: console
       })
       conf.run()
@@ -296,7 +293,6 @@ test('llama with embedded routes: pure Object definition, deep', async (t) => {
     // clean after usage
     // eslint-disable-next-line no-undef
     delete global.window
-
   } catch (e) {
     t.fail(e.stack)
   } finally {
@@ -308,7 +304,7 @@ test('llama with embedded routes: pure Object definition, deep', async (t) => {
 test('llama with embedded routes: pure Object definition, change sub', async (t) => {
   try {
     const dom = new JSDOM('<!DOCTYPE html><div id="app"><b>Hello world</b></div>', {
-      url: 'http://localhost/#/in/plop',
+      url: 'http://localhost/#/in/plop'
     })
     const eventBus = new EventBus()
 
@@ -320,12 +316,12 @@ test('llama with embedded routes: pure Object definition, change sub', async (t)
 
     let count = 0
 
-    const router2 = await new Promise((resolve2, reject2) => {
+    const router2 = await new Promise((_resolve, _reject) => {
       new Promise((resolve, reject) => {
         class OtherComponent extends Component {
-          init() {
+          init () {
             t.fail('should not be here')
-            reject('wrong place')
+            reject(new Error('wrong place'))
           }
         }
         const conf = llama({
@@ -336,7 +332,7 @@ test('llama with embedded routes: pure Object definition, change sub', async (t)
             '/': {
               name: 'main',
               html: '<b>Main</b><div id="sub"></div>',
-              onLoad() {
+              onLoad () {
                 count++
                 if (this.logger) this.logger.log('in main')
               },
@@ -344,7 +340,7 @@ test('llama with embedded routes: pure Object definition, change sub', async (t)
                 'in/:id': {
                   name: 'inside',
                   html: (args, path) => `in ${path} with ${JSON.stringify(args)}`,
-                  onLoad({ id }) {
+                  onLoad ({ id }) {
                     t.deepEqual(count, 1)
                     t.deepEqual(id, 'plop')
                     count++
@@ -355,12 +351,12 @@ test('llama with embedded routes: pure Object definition, change sub', async (t)
                 'sub/:id': {
                   name: 'sub',
                   html: (args, path) => `in another ${path} with ${JSON.stringify(args)}`,
-                  onLoad({ id }) {
+                  onLoad ({ id }) {
                     t.deepEqual(count, 2)
                     t.deepEqual(id, 'foo')
                     count++
                     if (this.logger) this.logger.log('in foo')
-                    resolve2(conf)
+                    _resolve(conf)
                   }
                 }
               }
@@ -370,12 +366,12 @@ test('llama with embedded routes: pure Object definition, change sub', async (t)
               name: Router.NOT_FOUND,
               type: Component,
               html: '404 Page not found',
-              onLoad() {
+              onLoad () {
                 t.fail('should not be here')
-                reject('wrong place')
+                reject(new Error('wrong place'))
               }
-            },
-          },
+            }
+          }
           // logger: console
         })
         conf.run()
@@ -393,8 +389,8 @@ test('llama with embedded routes: pure Object definition, change sub', async (t)
 
         window.location.hash = '/sub/foo'
 
-        setTimeout(() => { reject2(new Error('Failed to find route 2')) }, 500)
-      }).catch((r) => { reject2(r) })
+        setTimeout(() => { _reject(new Error('Failed to find route 2')) }, 500)
+      }).catch((r) => { _reject(r) })
     })
     t.deepEqual(count, 3)
 
@@ -409,7 +405,6 @@ test('llama with embedded routes: pure Object definition, change sub', async (t)
     // clean after usage
     // eslint-disable-next-line no-undef
     delete global.window
-
   } catch (e) {
     t.fail(e.stack)
   } finally {
@@ -421,7 +416,7 @@ test('llama with embedded routes: pure Object definition, change sub', async (t)
 test('llama with embedded routes: pure Object definition, change sub, depth 2', async (t) => {
   try {
     const dom = new JSDOM('<!DOCTYPE html><div id="app"><b>Hello world</b></div>', {
-      url: 'http://localhost/#/deep',
+      url: 'http://localhost/#/deep'
     })
     const eventBus = new EventBus()
 
@@ -433,12 +428,12 @@ test('llama with embedded routes: pure Object definition, change sub, depth 2', 
 
     let count = 0
 
-    const router2 = await new Promise((resolve2, reject2) => {
+    const router2 = await new Promise((_resolve, _reject) => {
       new Promise((resolve, reject) => {
         class OtherComponent extends Component {
-          init() {
+          init () {
             t.fail('should not be here')
-            reject('wrong place')
+            reject(new Error('wrong place'))
           }
         }
         const conf = llama({
@@ -449,11 +444,11 @@ test('llama with embedded routes: pure Object definition, change sub, depth 2', 
             '/': {
               name: 'main',
               html: '<b>Main</b><div id="sub"></div>',
-              onLoad() {
+              onLoad () {
                 count++
                 if (this.logger) this.logger.log('UT> in main')
               },
-              onPostLoad(args, path) {
+              onPostLoad (args, path) {
                 if (count === 3) t.deepEqual(path, '/deep/')
                 else if (count === 4) t.deepEqual(path, '/deep/sub/:id/')
                 else {
@@ -464,23 +459,23 @@ test('llama with embedded routes: pure Object definition, change sub, depth 2', 
                 '': {
                   name: 'default',
                   html: (args, path) => `default page ${path} with ${JSON.stringify(args)}`,
-                  onLoad() {
+                  onLoad () {
                     t.fail('should not be here')
-                    reject('wrong place')
+                    reject(new Error('wrong place'))
                   }
                 },
-                'deep': {
+                deep: {
                   name: 'deep',
                   sub_box: 'deep-sub',
                   html: '<b>Deep</b><div id="deep-sub"></div>',
-                  onLoad(args, path) {
+                  onLoad (args, path) {
                     if (path === '/deep/') t.deepEqual(count, 1)
                     else t.fail(`should not be here ${path} ${args}`)
                     count++
                     if (this.logger) this.logger.log('UT> in deep')
                     resolve(conf)
                   },
-                  onPostLoad(args, path) {
+                  onPostLoad (args, path) {
                     if (count === 3) t.deepEqual(path, '/deep/')
                     else if (count === 4) t.deepEqual(path, '/deep/sub/:id/')
                     else {
@@ -491,7 +486,7 @@ test('llama with embedded routes: pure Object definition, change sub, depth 2', 
                     '': {
                       name: 'inside',
                       html: (args, path) => `inside ${path} with ${JSON.stringify(args)}`,
-                      onLoad() {
+                      onLoad () {
                         t.deepEqual(count, 2)
                         count++
                         if (this.logger) this.logger.log('UT> in plop')
@@ -501,16 +496,16 @@ test('llama with embedded routes: pure Object definition, change sub, depth 2', 
                     'sub/:id': {
                       name: 'sub',
                       html: (args, path) => `in another ${path} with ${JSON.stringify(args)}`,
-                      onLoad({ id }) {
+                      onLoad ({ id }) {
                         t.deepEqual(count, 3)
                         t.deepEqual(id, 'foo')
                         count++
                         if (this.logger) this.logger.log('UT> in foo')
-                        resolve2(conf)
+                        _resolve(conf)
                       }
                     }
                   }
-                },
+                }
               }
             },
             '/other': OtherComponent,
@@ -518,13 +513,13 @@ test('llama with embedded routes: pure Object definition, change sub, depth 2', 
               name: Router.NOT_FOUND,
               type: Component,
               html: '404 Page not found',
-              onLoad() {
+              onLoad () {
                 t.fail('should not be here')
-                reject('wrong place')
+                reject(new Error('wrong place'))
               }
-            },
-          },
-          //logger: console
+            }
+          }
+          // logger: console
         })
         conf.run()
 
@@ -541,8 +536,8 @@ test('llama with embedded routes: pure Object definition, change sub, depth 2', 
         // console.log('--here--')
         window.location.hash = '/deep/sub/foo'
 
-        setTimeout(() => { reject2(new Error('Failed to find route 2')) }, 500)
-      }).catch((r) => { reject2(r) })
+        setTimeout(() => { _reject(new Error('Failed to find route 2')) }, 500)
+      }).catch((r) => { _reject(r) })
     })
     // console.log('--there--')
     t.deepEqual(count, 4)
@@ -558,7 +553,6 @@ test('llama with embedded routes: pure Object definition, change sub, depth 2', 
     // clean after usage
     // eslint-disable-next-line no-undef
     delete global.window
-
   } catch (e) {
     t.fail(e.stack)
   } finally {
@@ -567,11 +561,10 @@ test('llama with embedded routes: pure Object definition, change sub, depth 2', 
   }
 })
 
-
 test('llama with embedded routes: pure Object definition, change other', async (t) => {
   try {
     const dom = new JSDOM('<!DOCTYPE html><div id="app"><b>Hello world</b></div>', {
-      url: 'http://localhost/#/in/plop',
+      url: 'http://localhost/#/in/plop'
     })
     const eventBus = new EventBus()
 
@@ -583,14 +576,14 @@ test('llama with embedded routes: pure Object definition, change other', async (
 
     let count = 0
 
-    const router2 = await new Promise((resolve2, reject2) => {
+    const router2 = await new Promise((_resolve, _reject) => {
       new Promise((resolve, reject) => {
         class OtherComponent extends Component {
-          init() {
+          init () {
             t.deepEqual(count, 2)
             count++
             if (this.logger) this.logger.log('in other')
-            resolve2(conf)
+            _resolve(conf)
           }
         }
         const conf = llama({
@@ -601,7 +594,7 @@ test('llama with embedded routes: pure Object definition, change other', async (
             '/': {
               name: 'main',
               html: '<b>Main</b><div id="sub"></div>',
-              onLoad() {
+              onLoad () {
                 count++
                 if (this.logger) this.logger.log('in main')
               },
@@ -609,7 +602,7 @@ test('llama with embedded routes: pure Object definition, change other', async (
                 'in/:id': {
                   name: 'inside',
                   html: (args, path) => `in ${path} with ${JSON.stringify(args)}`,
-                  onLoad({ id }) {
+                  onLoad ({ id }) {
                     t.deepEqual(count, 1)
                     t.deepEqual(id, 'plop')
                     count++
@@ -620,9 +613,9 @@ test('llama with embedded routes: pure Object definition, change other', async (
                 'sub/:id': {
                   name: 'sub',
                   html: (args, path) => `in another ${path} with ${JSON.stringify(args)}`,
-                  onLoad() {
+                  onLoad () {
                     t.fail('should not be here')
-                    reject2('wrong place')
+                    _reject(new Error('wrong place'))
                   }
                 }
               }
@@ -632,12 +625,12 @@ test('llama with embedded routes: pure Object definition, change other', async (
               name: Router.NOT_FOUND,
               type: Component,
               html: '404 Page not found',
-              onLoad() {
+              onLoad () {
                 t.fail('should not be here')
-                reject2('wrong place')
+                _reject(new Error('wrong place'))
               }
-            },
-          },
+            }
+          }
           // logger: console
         })
         conf.run()
@@ -655,8 +648,8 @@ test('llama with embedded routes: pure Object definition, change other', async (
 
         window.location.hash = '/other'
 
-        setTimeout(() => { reject2(new Error('Failed to find route 2')) }, 500)
-      }).catch((r) => { reject2(r) })
+        setTimeout(() => { _reject(new Error('Failed to find route 2')) }, 500)
+      }).catch((r) => { _reject(r) })
     })
 
     // console.log('--there--')
@@ -665,7 +658,6 @@ test('llama with embedded routes: pure Object definition, change other', async (
     // clean after usage
     // eslint-disable-next-line no-undef
     delete global.window
-
   } catch (e) {
     t.fail(e.stack)
   } finally {
@@ -674,11 +666,10 @@ test('llama with embedded routes: pure Object definition, change other', async (
   }
 })
 
-
 test('llama with embedded routes: Component class definition root', async (t) => {
   try {
     const dom = new JSDOM('<!DOCTYPE html><div id="app"><b>Hello world</b></div>', {
-      url: 'http://localhost/#/other/foobar',
+      url: 'http://localhost/#/other/foobar'
     })
     const eventBus = new EventBus()
 
@@ -691,14 +682,14 @@ test('llama with embedded routes: Component class definition root', async (t) =>
     let count = 0
 
     const router = await new Promise((resolve, reject) => {
-
       class OtherComponent extends HostComponent {
-        constructor(opt) {
+        constructor (opt) {
           super(Object.assign({}, opt, {
-            html: '<b>Other</b><div id="sub"></div>',
+            html: '<b>Other</b><div id="sub"></div>'
           }))
         }
-        init() {
+
+        init () {
           t.deepEqual(count, 0)
           count++
           if (this.logger) this.logger.log('in other')
@@ -712,9 +703,9 @@ test('llama with embedded routes: Component class definition root', async (t) =>
         routes: {
           '/': {
             name: 'main',
-            onLoad() {
+            onLoad () {
               t.fail('should not be here')
-              reject('wrong place')
+              reject(new Error('wrong place'))
             }
           },
           '/other': {
@@ -723,7 +714,7 @@ test('llama with embedded routes: Component class definition root', async (t) =>
               '/:id': {
                 name: 'inside',
                 html: ({ id }, path, that) => `inside obj def ${that.context.plop} id:${id} for ${path}`,
-                onLoad({ id }) {
+                onLoad ({ id }) {
                   t.deepEqual(count, 1)
                   t.deepEqual(id, 'foobar')
                   count++
@@ -736,12 +727,12 @@ test('llama with embedded routes: Component class definition root', async (t) =>
           [Router.NOT_FOUND]: {
             name: Router.NOT_FOUND,
             html: '404 Page not found',
-            onLoad() {
+            onLoad () {
               t.fail('should not be here')
-              reject('wrong place')
+              reject(new Error('wrong place'))
             }
-          },
-        },
+          }
+        }
         // logger: console
       })
       conf.run()
@@ -762,20 +753,18 @@ test('llama with embedded routes: Component class definition root', async (t) =>
     // clean after usage
     // eslint-disable-next-line no-undef
     delete global.window
-
   } catch (e) {
     t.fail(e.stack)
   } finally {
     t.plan(5)
     t.end()
   }
-
 })
 
 test('llama with embedded routes: Component class definition root and embedded', async (t) => {
   try {
     const dom = new JSDOM('<!DOCTYPE html><div id="app"><b>Hello world</b></div>', {
-      url: 'http://localhost/#/other/barbar',
+      url: 'http://localhost/#/other/barbar'
     })
     const eventBus = new EventBus()
 
@@ -788,31 +777,33 @@ test('llama with embedded routes: Component class definition root and embedded',
     let count = 0
 
     const router = await new Promise((resolve, reject) => {
-
       class OtherComponent extends HostComponent {
-        constructor(opt) {
+        constructor (opt) {
           super(Object.assign({}, opt, {
-            html: '<b>Other</b><div id="sub"></div>',
+            html: '<b>Other</b><div id="sub"></div>'
           }))
         }
-        init() {
+
+        init () {
           t.deepEqual(count, 0)
           count++
           if (this.logger) this.logger.log('UT> in other', count)
         }
-        postLoad() {
+
+        postLoad () {
           if (this.logger) this.logger.log('UT> post', count)
           t.deepEqual(count, 2)
           count++
         }
       }
       class InsideComponent extends Component {
-        constructor(opt) {
+        constructor (opt) {
           super(Object.assign({}, opt, {
-            html: ({ id }, path, that) => `inside component ${that.context.plop} id:${id} for ${path}`,
+            html: ({ id }, path, that) => `inside component ${that.context.plop} id:${id} for ${path}`
           }))
         }
-        init({ id }) {
+
+        init ({ id }) {
           t.deepEqual(count, 1)
           t.deepEqual(id, 'barbar')
           count++
@@ -828,9 +819,9 @@ test('llama with embedded routes: Component class definition root and embedded',
         routes: {
           '/': {
             name: 'main',
-            onLoad() {
+            onLoad () {
               t.fail('should not be here')
-              reject('wrong place')
+              reject(new Error('wrong place'))
             }
           },
           '/other': {
@@ -842,12 +833,12 @@ test('llama with embedded routes: Component class definition root and embedded',
           [Router.NOT_FOUND]: {
             name: Router.NOT_FOUND,
             html: '404 Page not found',
-            onLoad() {
+            onLoad () {
               t.fail('should not be here')
-              reject('wrong place')
+              reject(new Error('wrong place'))
             }
-          },
-        },
+          }
+        }
         // logger: console
       })
       conf.run()
@@ -868,21 +859,18 @@ test('llama with embedded routes: Component class definition root and embedded',
     // clean after usage
     // eslint-disable-next-line no-undef
     delete global.window
-
   } catch (e) {
     t.fail(e.stack)
   } finally {
     t.plan(6)
     t.end()
   }
-
 })
-
 
 test('llama with embedded routes: Intermediate with no html', async (t) => {
   try {
     const dom = new JSDOM('<!DOCTYPE html><div id="app"><b>Hello world</b></div>', {
-      url: 'http://localhost/#/deep',
+      url: 'http://localhost/#/deep'
     })
     const eventBus = new EventBus()
 
@@ -894,12 +882,12 @@ test('llama with embedded routes: Intermediate with no html', async (t) => {
 
     let count = 0
 
-    const router2 = await new Promise((resolve2, reject2) => {
+    const router2 = await new Promise((_resolve, _reject) => {
       new Promise((resolve, reject) => {
         class OtherComponent extends Component {
-          init() {
+          init () {
             t.fail('should not be here')
-            reject('wrong place')
+            reject(new Error('wrong place'))
           }
         }
         const conf = llama({
@@ -910,11 +898,11 @@ test('llama with embedded routes: Intermediate with no html', async (t) => {
             '/': {
               name: 'main',
               html: '<b>Main</b><div id="sub"></div>',
-              onLoad() {
+              onLoad () {
                 count++
                 if (this.logger) this.logger.log('UT> in main')
               },
-              onPostLoad(args, path) {
+              onPostLoad (args, path) {
                 if (count === 3) t.deepEqual(path, '/deep/')
                 else if (count === 4) t.deepEqual(path, '/deep/sub/:id/')
                 else {
@@ -925,21 +913,21 @@ test('llama with embedded routes: Intermediate with no html', async (t) => {
                 '': {
                   name: 'default',
                   html: (args, path) => `default page ${path} with ${JSON.stringify(args)}`,
-                  onLoad() {
+                  onLoad () {
                     t.fail('should not be here')
-                    reject('wrong place')
+                    reject(new Error('wrong place'))
                   }
                 },
-                'deep': {
+                deep: {
                   name: 'deep',
-                  onLoad(args, path) {
+                  onLoad (args, path) {
                     if (path === '/deep/') t.deepEqual(count, 1)
                     else t.fail(`should not be here ${path} ${args}`)
                     count++
                     if (this.logger) this.logger.log('UT> in deep')
                     resolve(conf)
                   },
-                  onPostLoad(args, path) {
+                  onPostLoad (args, path) {
                     if (count === 3) t.deepEqual(path, '/deep/')
                     else if (count === 4) t.deepEqual(path, '/deep/sub/:id/')
                     else {
@@ -950,7 +938,7 @@ test('llama with embedded routes: Intermediate with no html', async (t) => {
                     '': {
                       name: 'inside',
                       html: (args, path) => `inside ${path} with ${JSON.stringify(args)}`,
-                      onLoad() {
+                      onLoad () {
                         t.deepEqual(count, 2)
                         count++
                         if (this.logger) this.logger.log('UT> in plop')
@@ -960,16 +948,16 @@ test('llama with embedded routes: Intermediate with no html', async (t) => {
                     'sub/:id': {
                       name: 'sub',
                       html: (args, path) => `in another ${path} with ${JSON.stringify(args)}`,
-                      onLoad({ id }) {
+                      onLoad ({ id }) {
                         t.deepEqual(count, 3)
                         t.deepEqual(id, 'foo')
                         count++
                         if (this.logger) this.logger.log('UT> in foo')
-                        resolve2(conf)
+                        _resolve(conf)
                       }
                     }
                   }
-                },
+                }
               }
             },
             '/other': OtherComponent,
@@ -977,13 +965,13 @@ test('llama with embedded routes: Intermediate with no html', async (t) => {
               name: Router.NOT_FOUND,
               type: Component,
               html: '404 Page not found',
-              onLoad() {
+              onLoad () {
                 t.fail('should not be here')
-                reject('wrong place')
+                reject(new Error('wrong place'))
               }
-            },
-          },
-          //logger: console
+            }
+          }
+          // logger: console
         })
         conf.run()
 
@@ -1000,8 +988,8 @@ test('llama with embedded routes: Intermediate with no html', async (t) => {
         // console.log('--here--')
         window.location.hash = '/deep/sub/foo'
 
-        setTimeout(() => { reject2(new Error('Failed to find route 2')) }, 500)
-      }).catch((r) => { reject2(r) })
+        setTimeout(() => { _reject(new Error('Failed to find route 2')) }, 500)
+      }).catch((r) => { _reject(r) })
     })
     // console.log('--there--')
     t.deepEqual(count, 4)
@@ -1017,7 +1005,6 @@ test('llama with embedded routes: Intermediate with no html', async (t) => {
     // clean after usage
     // eslint-disable-next-line no-undef
     delete global.window
-
   } catch (e) {
     t.fail(e.stack)
   } finally {
@@ -1026,12 +1013,10 @@ test('llama with embedded routes: Intermediate with no html', async (t) => {
   }
 })
 
-
-
 test('llama with embedded routes: Intermediate with no html and custom sub_box', async (t) => {
   try {
     const dom = new JSDOM('<!DOCTYPE html><div id="app"><b>Hello world</b></div>', {
-      url: 'http://localhost/#/deep',
+      url: 'http://localhost/#/deep'
     })
     const eventBus = new EventBus()
 
@@ -1043,12 +1028,12 @@ test('llama with embedded routes: Intermediate with no html and custom sub_box',
 
     let count = 0
 
-    const router2 = await new Promise((resolve2, reject2) => {
+    const router2 = await new Promise((_resolve, _reject) => {
       new Promise((resolve, reject) => {
         class OtherComponent extends Component {
-          init() {
+          init () {
             t.fail('should not be here')
-            reject('wrong place')
+            reject(new Error('wrong place'))
           }
         }
         const conf = llama({
@@ -1060,11 +1045,11 @@ test('llama with embedded routes: Intermediate with no html and custom sub_box',
               name: 'main',
               sub_box: 'custom-sub',
               html: '<b>Main</b><div id="custom-sub"></div>',
-              onLoad() {
+              onLoad () {
                 count++
                 if (this.logger) this.logger.log('UT> in main')
               },
-              onPostLoad(args, path) {
+              onPostLoad (args, path) {
                 if (count === 3) t.deepEqual(path, '/deep/')
                 else if (count === 4) t.deepEqual(path, '/deep/sub/:id/')
                 else {
@@ -1075,21 +1060,21 @@ test('llama with embedded routes: Intermediate with no html and custom sub_box',
                 '': {
                   name: 'default',
                   html: (args, path) => `default page ${path} with ${JSON.stringify(args)}`,
-                  onLoad() {
+                  onLoad () {
                     t.fail('should not be here')
-                    reject('wrong place')
+                    reject(new Error('wrong place'))
                   }
                 },
-                'deep': {
+                deep: {
                   name: 'deep',
-                  onLoad(args, path) {
+                  onLoad (args, path) {
                     if (path === '/deep/') t.deepEqual(count, 1)
                     else t.fail(`should not be here ${path} ${args}`)
                     count++
                     if (this.logger) this.logger.log('UT> in deep')
                     resolve(conf)
                   },
-                  onPostLoad(args, path) {
+                  onPostLoad (args, path) {
                     if (count === 3) t.deepEqual(path, '/deep/')
                     else if (count === 4) t.deepEqual(path, '/deep/sub/:id/')
                     else {
@@ -1100,7 +1085,7 @@ test('llama with embedded routes: Intermediate with no html and custom sub_box',
                     '': {
                       name: 'inside',
                       html: (args, path) => `inside ${path} with ${JSON.stringify(args)}`,
-                      onLoad() {
+                      onLoad () {
                         t.deepEqual(count, 2)
                         count++
                         if (this.logger) this.logger.log('UT> in plop')
@@ -1110,16 +1095,16 @@ test('llama with embedded routes: Intermediate with no html and custom sub_box',
                     'sub/:id': {
                       name: 'sub',
                       html: (args, path) => `in another ${path} with ${JSON.stringify(args)}`,
-                      onLoad({ id }) {
+                      onLoad ({ id }) {
                         t.deepEqual(count, 3)
                         t.deepEqual(id, 'foo')
                         count++
                         if (this.logger) this.logger.log('UT> in foo')
-                        resolve2(conf)
+                        _resolve(conf)
                       }
                     }
                   }
-                },
+                }
               }
             },
             '/other': OtherComponent,
@@ -1127,13 +1112,13 @@ test('llama with embedded routes: Intermediate with no html and custom sub_box',
               name: Router.NOT_FOUND,
               type: Component,
               html: '404 Page not found',
-              onLoad() {
+              onLoad () {
                 t.fail('should not be here')
-                reject('wrong place')
+                reject(new Error('wrong place'))
               }
-            },
-          },
-          //logger: console
+            }
+          }
+          // logger: console
         })
         conf.run()
 
@@ -1150,8 +1135,8 @@ test('llama with embedded routes: Intermediate with no html and custom sub_box',
         // console.log('--here--')
         window.location.hash = '/deep/sub/foo'
 
-        setTimeout(() => { reject2(new Error('Failed to find route 2')) }, 500)
-      }).catch((r) => { reject2(r) })
+        setTimeout(() => { _reject(new Error('Failed to find route 2')) }, 500)
+      }).catch((r) => { _reject(r) })
     })
     // console.log('--there--')
     t.deepEqual(count, 4)
@@ -1167,7 +1152,6 @@ test('llama with embedded routes: Intermediate with no html and custom sub_box',
     // clean after usage
     // eslint-disable-next-line no-undef
     delete global.window
-
   } catch (e) {
     t.fail(e.stack)
   } finally {

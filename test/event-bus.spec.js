@@ -18,38 +18,37 @@ import EventBus from '../event-bus.js'
 const COUNT_EVENT = 'count'
 test('Event bus', async (t) => {
   try {
-    const eb = new EventBus(/**{ logger: console }/**/)
+    const eb = new EventBus(/** { logger: console }/**/)
 
     let count = 0
 
     eb.on('test', COUNT_EVENT, (r, n) => { count += n || 1; r() })
     t.deepEqual(count, 0)
 
-    await new Promise((r) => {
-      eb.emit(COUNT_EVENT, r)
+    await new Promise((resolve) => {
+      eb.emit(COUNT_EVENT, resolve)
     })
     t.deepEqual(count, 1)
 
-    await new Promise((r) => {
-      eb.emit(COUNT_EVENT, r, 2)
+    await new Promise((resolve) => {
+      eb.emit(COUNT_EVENT, resolve, 2)
     })
     t.deepEqual(count, 3)
 
     eb.clear('plop')
 
-    await new Promise((r) => {
-      eb.emit(COUNT_EVENT, r, 3)
+    await new Promise((resolve) => {
+      eb.emit(COUNT_EVENT, resolve, 3)
     })
     t.deepEqual(count, 6)
 
     eb.clear('test')
 
-    await new Promise((r) => {
-      eb.emit(COUNT_EVENT, r, 4)
-      setTimeout(r, 100) // because no call of the event as we cleaned it
+    await new Promise((resolve) => {
+      eb.emit(COUNT_EVENT, resolve, 4)
+      setTimeout(resolve, 100) // because no call of the event as we cleaned it
     })
     t.deepEqual(count, 6)
-
   } catch (e) {
     t.fail(e.stack)
   } finally {

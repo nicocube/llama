@@ -18,10 +18,11 @@ const pathRx = /\/(?:(?::([0-9A-Za-z.+-]+))|([0-9A-Za-z.+-]+))/g
 const urlRx = /\/([0-9A-Za-z.+-]+)/g
 
 export class Param {
-  constructor(name) {
+  constructor (name) {
     this.name = name
   }
-  addTo(args, val) {
+
+  addTo (args, val) {
     args[this.name] = val
   }
 }
@@ -30,26 +31,27 @@ export class Path {
   /**
    *
    * @param {string} path
-   * @param {Array} path_parts
+   * @param {Array} pathParts
    */
-  constructor(path, path_parts) {
+  constructor (path, pathParts) {
     this.path = path
-    this.path_parts = path_parts
+    this.path_parts = pathParts
   }
-  static build(path) {
-    const path_parts = []
+
+  static build (path) {
+    const pathParts = []
     let parts
     while ((parts = pathRx.exec(path)) !== null) {
       if (typeof parts[1] !== 'undefined') {
-        path_parts.push(new Param(parts[1]))
+        pathParts.push(new Param(parts[1]))
       } else if (typeof parts[2] !== 'undefined') {
-        path_parts.push(parts[2])
+        pathParts.push(parts[2])
       }
     }
-    return new Path(path, path_parts)
+    return new Path(path, pathParts)
   }
 
-  check(parts) {
+  check (parts) {
     if (parts.length === this.path_parts.length) {
       const args = {}
       if (this.path_parts.every((v, i) => {
@@ -67,11 +69,12 @@ export class Path {
 }
 
 export class Parsed {
-  constructor(path, args) {
+  constructor (path, args) {
     this.path = path
     this.args = args
   }
-  toString() {
+
+  toString () {
     return `Parsed{"${this.path}", ${JSON.stringify(this.args)}}`
   }
 }
@@ -88,7 +91,7 @@ export default class Router {
    * @param {object} [options]
    * @param {Console} [options.logger] define a logger, can be {logger: console} to send on the javascript console
    */
-  constructor(eventBus, options) {
+  constructor (eventBus, options) {
     /**
      * @property {Path[]} routes
      */
@@ -99,7 +102,7 @@ export default class Router {
     this.logger = options?.logger || undefined
   }
 
-  before(action) {
+  before (action) {
     this.before_action = action
   }
 
@@ -108,48 +111,50 @@ export default class Router {
    * @param {string} path
    * @param {function|Component} action
    */
-  on(path, action) {
+  on (path, action) {
     if (this.logger) this.logger.debug(`router.on(${path}, ${action.toString()})`)
     this.routes.push(Path.build(path))
     this.actions[path] = action
     if (action instanceof Component) action.listen(path)
   }
 
-  run() {
+  run () {
     if (this.logger) this.logger.debug('router.run()')
     this._route = () => this.route()
     window.addEventListener('hashchange', this._route)
     window.addEventListener('load', this._route)
-    if (this.eventBus) this.eventBus.on('router', Router.GO, (path) => {
-      this.go(path)
-    })
+    if (this.eventBus) {
+      this.eventBus.on('router', Router.GO, (path) => {
+        this.go(path)
+      })
+    }
   }
 
-  stop() {
+  stop () {
     window.removeEventListener('hashchange', this._route)
     window.removeEventListener('load', this._route)
   }
 
-  go(path) {
+  go (path) {
     window.location.hash = path
   }
 
-  async route() {
+  async route () {
     if (this.logger) this.logger.debug(`router.route(): ${window.location.hash}`)
     const path = (window.location.hash.at(0) === '#')
       ? window.location.hash.substring(1)
       : window.location.hash || '/'
 
     try {
-      const url_parts = []
+      const urlParts = []
       let parts
       while ((parts = urlRx.exec(path)) !== null) {
-        if (parts[1] !== '') url_parts.push(parts[1])
+        if (parts[1] !== '') urlParts.push(parts[1])
       }
 
       let parsed
       for (const route of this.routes) {
-        parsed = route.check(url_parts)
+        parsed = route.check(urlParts)
         if (parsed) break
       }
       // eslint-disable-next-line prefer-template
@@ -178,9 +183,10 @@ export default class Router {
         const action = this.actions[Router.ERROR]
         if (action instanceof Component) await action.call({ error }, path)
         else await action({ error }, path)
+      } else {
+        // otherwise let's it keep bubbling
+        throw error
       }
-      // otherwise let's it keep bubbling
-      else throw error
     }
   }
 }
