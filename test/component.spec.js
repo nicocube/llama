@@ -39,9 +39,7 @@ test('Component.empty self', async (t) => {
   try {
     const dom = new JSDOM('<!DOCTYPE html><div id="app"><b>Hello world</b></div>')
 
-    // eslint-disable-next-line no-undef
     global.window = dom.window
-    // eslint-disable-next-line no-undef
     global.document = dom.window.document
 
     const appBox = dom.window.document.getElementById('app')
@@ -64,7 +62,6 @@ test('Component.injectCSS', async (t) => {
   try {
     const dom = new JSDOM('<!DOCTYPE html><div id="app"><b>Hello world</b></div>')
 
-    // eslint-disable-next-line no-undef
     global.document = dom.window.document
 
     const component = new Component({
@@ -86,7 +83,6 @@ test('Component.injectHTML string', async (t) => {
   try {
     const dom = new JSDOM('<!DOCTYPE html><div id="app"></div>')
 
-    // eslint-disable-next-line no-undef
     global.document = dom.window.document
 
     const component = new Component({
@@ -108,7 +104,6 @@ test('Component.injectHTML function', async (t) => {
   try {
     const dom = new JSDOM('<!DOCTYPE html><div id="app"></div>')
 
-    // eslint-disable-next-line no-undef
     global.document = dom.window.document
 
     const component = new Component({
@@ -130,9 +125,8 @@ test('Component.injectHTML string + set children to zone + gId', async (t) => {
   try {
     const dom = new JSDOM('<!DOCTYPE html><div id="app"></div>')
 
-    // eslint-disable-next-line no-undef
     global.document = dom.window.document
-    // eslint-disable-next-line no-undef
+
     global.window = dom.window
 
     const component = new Component({
@@ -172,9 +166,8 @@ test('Component.unload', async (t) => {
   try {
     const dom = new JSDOM('<!DOCTYPE html><div id="app"></div>')
 
-    // eslint-disable-next-line no-undef
     global.window = dom.window
-    // eslint-disable-next-line no-undef
+
     global.document = dom.window.document
 
     let count = 0

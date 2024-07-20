@@ -21,9 +21,7 @@ test('llama flat routes: Object definition', async (t) => {
     })
 
     // must be global to mimic browser behavior
-    // eslint-disable-next-line no-undef
     global.window = dom.window
-    // eslint-disable-next-line no-undef
     global.document = dom.window.document
 
     let count = 0
@@ -70,7 +68,6 @@ test('llama flat routes: Object definition', async (t) => {
     router.stop()
 
     // clean after usage
-    // eslint-disable-next-line no-undef
     delete global.window
   } catch (e) {
     t.fail(e.stack)
@@ -87,9 +84,7 @@ test('llama flat routes: Component class definition', async (t) => {
     })
 
     // must be global to mimic browser behavior
-    // eslint-disable-next-line no-undef
     global.window = dom.window
-    // eslint-disable-next-line no-undef
     global.document = dom.window.document
 
     let count = 0
@@ -136,7 +131,6 @@ test('llama flat routes: Component class definition', async (t) => {
     router.stop()
 
     // clean after usage
-    // eslint-disable-next-line no-undef
     delete global.window
   } catch (e) {
     t.fail(e.stack)
@@ -154,9 +148,7 @@ test('llama flat routes: NOT FOUND', async (t) => {
     const eventBus = new EventBus()
 
     // must be global to mimic browser behavior
-    // eslint-disable-next-line no-undef
     global.window = dom.window
-    // eslint-disable-next-line no-undef
     global.document = dom.window.document
 
     let count = 0
@@ -206,7 +198,6 @@ test('llama flat routes: NOT FOUND', async (t) => {
     router.stop()
 
     // clean after usage
-    // eslint-disable-next-line no-undef
     delete global.window
   } catch (e) {
     t.fail(e.stack)

@@ -9,10 +9,11 @@
  * See the License for the specific language governing permissions and limitations under the License.
  */
 
-// eslint-disable-next-line no-unused-vars
-import Component from './component.js'
+// JSDoc
 // eslint-disable-next-line no-unused-vars
 import EventBus from './event-bus.js'
+
+import Component from './component.js'
 
 const pathRx = /\/(?:(?::([0-9A-Za-z.+-]+))|([0-9A-Za-z.+-]+))/g
 const urlRx = /\/([0-9A-Za-z.+-]+)/g
@@ -157,7 +158,6 @@ export default class Router {
         parsed = route.check(urlParts)
         if (parsed) break
       }
-      // eslint-disable-next-line prefer-template
       if (this.logger) this.logger.debug(`router.route() ${parsed ? 'found ' + parsed.toString() : 'not found'}`)
 
       if (typeof parsed === 'undefined') {

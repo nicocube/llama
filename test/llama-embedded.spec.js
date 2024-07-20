@@ -23,9 +23,7 @@ test('llama with embedded routes: pure Object definition', async (t) => {
     const eventBus = new EventBus()
 
     // must be global to mimic browser behavior
-    // eslint-disable-next-line no-undef
     global.window = dom.window
-    // eslint-disable-next-line no-undef
     global.document = dom.window.document
 
     let count = 0
@@ -93,7 +91,6 @@ test('llama with embedded routes: pure Object definition', async (t) => {
     router.stop()
 
     // clean after usage
-    // eslint-disable-next-line no-undef
     delete global.window
   } catch (e) {
     t.fail(e.stack)
@@ -111,9 +108,7 @@ test('llama with embedded routes: pure Object definition, default subroute', asy
     const eventBus = new EventBus()
 
     // must be global to mimic browser behavior
-    // eslint-disable-next-line no-undef
     global.window = dom.window
-    // eslint-disable-next-line no-undef
     global.document = dom.window.document
 
     let count = 0
@@ -188,7 +183,6 @@ test('llama with embedded routes: pure Object definition, default subroute', asy
     router.stop()
 
     // clean after usage
-    // eslint-disable-next-line no-undef
     delete global.window
   } catch (e) {
     t.fail(e.stack)
@@ -206,9 +200,7 @@ test('llama with embedded routes: pure Object definition, deep', async (t) => {
     const eventBus = new EventBus()
 
     // must be global to mimic browser behavior
-    // eslint-disable-next-line no-undef
     global.window = dom.window
-    // eslint-disable-next-line no-undef
     global.document = dom.window.document
 
     let count = 0
@@ -289,7 +281,6 @@ test('llama with embedded routes: pure Object definition, deep', async (t) => {
     router.stop()
 
     // clean after usage
-    // eslint-disable-next-line no-undef
     delete global.window
   } catch (e) {
     t.fail(e.stack)
@@ -307,9 +298,7 @@ test('llama with embedded routes: pure Object definition, change sub', async (t)
     const eventBus = new EventBus()
 
     // must be global to mimic browser behavior
-    // eslint-disable-next-line no-undef
     global.window = dom.window
-    // eslint-disable-next-line no-undef
     global.document = dom.window.document
 
     let count = 0
@@ -401,7 +390,6 @@ test('llama with embedded routes: pure Object definition, change sub', async (t)
     router2.stop()
 
     // clean after usage
-    // eslint-disable-next-line no-undef
     delete global.window
   } catch (e) {
     t.fail(e.stack)
@@ -419,9 +407,7 @@ test('llama with embedded routes: pure Object definition, change sub, depth 2', 
     const eventBus = new EventBus()
 
     // must be global to mimic browser behavior
-    // eslint-disable-next-line no-undef
     global.window = dom.window
-    // eslint-disable-next-line no-undef
     global.document = dom.window.document
 
     let count = 0
@@ -549,7 +535,6 @@ test('llama with embedded routes: pure Object definition, change sub, depth 2', 
     router2.stop()
 
     // clean after usage
-    // eslint-disable-next-line no-undef
     delete global.window
   } catch (e) {
     t.fail(e.stack)
@@ -567,9 +552,7 @@ test('llama with embedded routes: pure Object definition, change other', async (
     const eventBus = new EventBus()
 
     // must be global to mimic browser behavior
-    // eslint-disable-next-line no-undef
     global.window = dom.window
-    // eslint-disable-next-line no-undef
     global.document = dom.window.document
 
     let count = 0
@@ -654,7 +637,6 @@ test('llama with embedded routes: pure Object definition, change other', async (
     router2.stop()
 
     // clean after usage
-    // eslint-disable-next-line no-undef
     delete global.window
   } catch (e) {
     t.fail(e.stack)
@@ -672,9 +654,7 @@ test('llama with embedded routes: Component class definition root', async (t) =>
     const eventBus = new EventBus()
 
     // must be global to mimic browser behavior
-    // eslint-disable-next-line no-undef
     global.window = dom.window
-    // eslint-disable-next-line no-undef
     global.document = dom.window.document
 
     let count = 0
@@ -749,7 +729,6 @@ test('llama with embedded routes: Component class definition root', async (t) =>
     router.stop()
 
     // clean after usage
-    // eslint-disable-next-line no-undef
     delete global.window
   } catch (e) {
     t.fail(e.stack)
@@ -767,9 +746,7 @@ test('llama with embedded routes: Component class definition root and embedded',
     const eventBus = new EventBus()
 
     // must be global to mimic browser behavior
-    // eslint-disable-next-line no-undef
     global.window = dom.window
-    // eslint-disable-next-line no-undef
     global.document = dom.window.document
 
     let count = 0
@@ -855,7 +832,6 @@ test('llama with embedded routes: Component class definition root and embedded',
     router.stop()
 
     // clean after usage
-    // eslint-disable-next-line no-undef
     delete global.window
   } catch (e) {
     t.fail(e.stack)
@@ -873,9 +849,7 @@ test('llama with embedded routes: Intermediate with no html', async (t) => {
     const eventBus = new EventBus()
 
     // must be global to mimic browser behavior
-    // eslint-disable-next-line no-undef
     global.window = dom.window
-    // eslint-disable-next-line no-undef
     global.document = dom.window.document
 
     let count = 0
@@ -1001,7 +975,6 @@ test('llama with embedded routes: Intermediate with no html', async (t) => {
     router2.stop()
 
     // clean after usage
-    // eslint-disable-next-line no-undef
     delete global.window
   } catch (e) {
     t.fail(e.stack)
@@ -1019,9 +992,7 @@ test('llama with embedded routes: Intermediate with no html and custom sub_box',
     const eventBus = new EventBus()
 
     // must be global to mimic browser behavior
-    // eslint-disable-next-line no-undef
     global.window = dom.window
-    // eslint-disable-next-line no-undef
     global.document = dom.window.document
 
     let count = 0
@@ -1148,7 +1119,6 @@ test('llama with embedded routes: Intermediate with no html and custom sub_box',
     router2.stop()
 
     // clean after usage
-    // eslint-disable-next-line no-undef
     delete global.window
   } catch (e) {
     t.fail(e.stack)

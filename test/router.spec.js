@@ -48,7 +48,6 @@ test('Router.route', async (t) => {
     let count = 0
 
     // must be global to mimic browser behavior
-    // eslint-disable-next-line no-undef
     global.window = { location: { hash: '/' } }
 
     router.on('/', () => {
@@ -80,7 +79,6 @@ test('Router.route', async (t) => {
     t.deepEqual(count, 3)
 
     // clean after usage
-    // eslint-disable-next-line no-undef
     delete global.window
   } catch (e) {
     t.fail(e.stack)

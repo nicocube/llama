@@ -156,12 +156,10 @@ export default class Component {
   addChildren (args, path, ...children) {
     if (path instanceof Component) {
       children.unshift(path)
-      // eslint-disable-next-line no-param-reassign
       path = undefined
     }
     if (args instanceof Component) {
       children.unshift(args)
-      // eslint-disable-next-line no-param-reassign
       args = undefined
     }
     children.forEach((child) => {
@@ -178,7 +176,6 @@ export default class Component {
    * @param {...Component} children
   */
   removeChildren (...children) {
-    // eslint-disable-next-line no-param-reassign
     if (children.length === 0) children = this.children.slice()
     if (this.logger) this.logger.log(`${this.name}.removeChildren:`, this.children.map(x => x.name))
     children.forEach((child) => {
