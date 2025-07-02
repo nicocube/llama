@@ -18,12 +18,26 @@ export {
 }
 
 /**
+ * Set all the Llama goodness together
+ *
+ * @param {Object} options the configuration options
+ * @param {string} [options.box] the id of the div we load components in
+ * @param {EventBus} [options.eventBus] an event-bus to pass to the different Components
+ * @param {Object} [options.context] a shared context object for all the routes
+ * @param {Object.<string, Class<Component>|RouteTarget>} options.routes the description of routes
+ * @param {Console} [options.logger] define a logger, can be {logger: console} to send on the javascript console
+ */
+export default function llama (options) {
+  return new LlamaConfig(options).buildRouter()
+}
+
+/**
  * @typedef {Object} RouteTarget
- * @property {typeof Component} [type]
+ * @property {Class<Component>} [type]
  * @property {string} [name] name of the component to serve as source for event listeners
  * @property {string} [box] the id of an HTML element the component is rendered into
  * @property {string} [sub_box] the id of an HTML element the embedded sub-component are rendered into
- * @property {string|(args: object, path: string, this:Component)=>{}} [html] a string or a function that produce a html to be injected before init
+ * @property {string|(args: object, path: string, this:Component)=>string} [html] a string or a function that produce a html to be injected before init
  * @property {string} [css] a string of CSS to be injected
  * @property {(args: object, path: string)=>{}} [onLoad] a hook for action on load of the component
  * @property {(args: object, path: string)=>{}} [onPostLoad] a hook for action after load of the component
@@ -34,28 +48,19 @@ export {
  */
 
 /**
- * Set all the Llama goodness together
+ * The Llama config parser
+ *
+ * @class LlamaConfig
+ * @private
  *
  * @param {Object} options
  * @param {string} [options.box] the id of the div we load components in
  * @param {EventBus} [options.eventBus]
  * @param {Object} [options.context]
- * @param {Object.<string, typeof Component|RouteTarget>} options.routes
+ * @param {Object.<string, Class<Component>|RouteTarget>} options.routes
  * @param {Console} [options.logger] define a logger, can be {logger: console} to send on the javascript console
  */
-export default function llama (options) {
-  return new LlamaConfig(options).buildRouter()
-}
-
-export class LlamaConfig {
-  /**
-   * @param {Object} options
-   * @param {string} [options.box] the id of the div we load components in
-   * @param {EventBus} [options.eventBus]
-   * @param {Object} [options.context]
-   * @param {Object.<string, typeof Component|RouteTarget>} options.routes
-   * @param {Console} [options.logger] define a logger, can be {logger: console} to send on the javascript console
-   */
+class LlamaConfig {
   constructor (options) {
     if (!('routes' in options)) throw new Error('options.routes is compulsory')
 
@@ -70,6 +75,11 @@ export class LlamaConfig {
     this.options = options
   }
 
+  /**
+   * Build a new router from Llama config
+   *
+   * @returns {Router} a new router that match the config
+   */
   buildRouter () {
     const router = new Router(this.eventBus, this.addLogger())
 
@@ -103,6 +113,14 @@ export class LlamaConfig {
     return router
   }
 
+  /**
+   * Recursively parse route config for {@link LlamaConfig.buildRouter}
+   *
+   * @param {string} path
+   * @param {Object.<string, RouteTarget>} embed
+   * @param {Object} opt
+   * @returns {Object} an embedded route object description to be added to parent route
+   */
   recBuildEmbedded (path, embed, opt) {
     const res = {}
     for (const [p, T] of Object.entries(embed)) {
@@ -143,6 +161,13 @@ export class LlamaConfig {
     return res
   }
 
+  /**
+   * Recursively parse an embedded route object description and return all the paths
+   *
+   * @param {object} subRoute an embedded route object description
+   * @param {Set.<string>} [res] the intermediate result
+   * @returns {Set.<string>} all the paths of the
+   */
   flattenSubRoute (subRoute, res = new Set()) {
     for (const [p, t] of Object.entries(subRoute)) {
       if (!(t instanceof HostComponent)) {
@@ -171,3 +196,9 @@ export class LlamaConfig {
     return (field in o) && o[field] && cond ? { [field]: o[field] } : {}
   }
 }
+
+/**
+ * @private
+ * @template T
+ * @typedef {new (...args: any[]) => T} Class
+ */

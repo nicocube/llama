@@ -18,7 +18,8 @@
     "test": "tape test/**/*.spec.js |tap-summary --no-progress",
     "test:watch": "nodemon -x 'clear; npm run test'",
     "coverage": "c8 tape test/**/*.spec.js && c8 report --reporter=html",
-    "preversion": "npm test && npm outdated && npm audit"
+    "document": "npx documentation readme index.js -s 'API Doc' --markdown-toc-max-depth 3",
+    "preversion": "npm run document && npm test && npm outdated && npm audit"
   },
   "devDependencies": {
     "@freecube/tap-summary": "^4.0.4",

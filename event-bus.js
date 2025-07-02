@@ -9,14 +9,17 @@
  * See the License for the specific language governing permissions and limitations under the License.
  */
 
+/**
+ * A simple event bus to enable event-driven architecture
+ *
+ * @class SimpleEventBus
+ *
+ * @param {Object} options optional parameters
+ * @param {string} [options.name] define a name, in a multi EventBus scenario
+ * @param {(e:Error) => {}} [options.catcher] define an error catching function
+ * @param {Console} [options.logger] define a logger, can be {logger: console} to send on the javascript console
+ */
 export class SimpleEventBus {
-  /**
-   * A simple event bus to enable event-driven architecture
-   * @param {Object} options optional parameters
-   * @param {string} [options.name] define a name, in a multi EventBus scenario
-   * @param {(e:Error) => {}} [options.catcher] define an error catching function
-   * @param {Console} [options.logger] define a logger, can be {logger: console} to send on the javascript console
-   */
   constructor (options = {}) {
     this._hook = new Map()
     this.name = options?.name || 'emit'
@@ -81,6 +84,14 @@ export class SimpleEventBus {
   }
 }
 
+/**
+ * @private
+ * @class SequenceHandlerLoader
+ *
+ * @param {*} sqEventBus
+ * @param {*} src
+ * @param {*} evt
+ */
 export class SequenceHandlerLoader {
   constructor (sqEventBus, src, evt) {
     Object.assign(this, { sqEventBus, src, evt })
@@ -102,17 +113,22 @@ export class SequenceHandlerLoader {
   }
 }
 
+/**
+ * A Complex event bus to enable event-driven architecture with a before and after event hook
+ *
+ * @class SequenceEventBus
+ *
+ * @param {Object} options optional parameters
+ * @param {(e:Error, ...r) => {}} [options.catcher] define an error catching function
+ * @param {Console} [options.logger] define a logger, can be {logger: console} to send on the javascript console
+ */
 export class SequenceEventBus {
-  /**
-   * A simple event bus to enable event-driven architecture
-   * @param {Object} options optional parameters
-   * @param {(e:Error, ...r) => {}} [options.catcher] define an error catching function
-   * @param {Console} [options.logger] define a logger, can be {logger: console} to send on the javascript console
-   */
   constructor (options = {}) {
     this._before = new SimpleEventBus({ name: 'before', catcher: options?.catcher, logger: options?.logger })
     this._emit = new SimpleEventBus({ name: 'emit', catcher: options?.catcher, logger: options?.logger })
     this._after = new SimpleEventBus({ name: 'after', catcher: options?.catcher, logger: options?.logger })
+    this.catcher = options?.catcher
+    this.logger = options?.logger
   }
 
   /**

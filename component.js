@@ -11,25 +11,27 @@
 
 import EventBus from './event-bus.js'
 
+/**
+ * Common ground for vanilla Widget Component
+ *
+ * @class Component
+ *
+ * @param {Object} options a set of option al
+ * @param {string} [options.name] name of the component to serve as source for event listeners
+ * @param {string} [options.box] the id of the HTMLElement to which we want to plug the component
+ * @param {EventBus} [options.eventBus] to receive and send events
+ * @param {Object.<string,any>} [options.context]
+ * @param {Console} [options.logger] define a logger, can be {logger: console} to send on the javascript console
+ * @param {string|(args: object, path: string, this:Component)=>{}} [options.html]
+ * @param {string} [options.css]
+ * @param {(args: object, path: string)=>{}} [options.onLoad] a hook for action on load of the component (do this or overload {Component.init} method)
+ * @param {(args: object, path: string)=>{}} [options.onPostLoad] a hook for action after load of the component (do this or overload {Component.postLoad} method)
+ * @param {()=>{}} [options.onBeforeClean] a hook for action on load of the component (do this or overload {Component.init} method)
+ * @param {()=>{}} [options.onAfterClean] a hook for action on load of the component (do this or overload {Component.init} method)
+ */
 export default class Component {
   static LOAD = 'llama-component-load'
 
-  /**
-   * Common ground for vanilla Widget Component
-   *
-   * @param {Object} options a set of option al
-   * @param {string} [options.name] name of the component to serve as source for event listeners
-   * @param {string} [options.box] the id of the HTMLElement to which we want to plug the component
-   * @param {EventBus} [options.eventBus] to receive and send events
-   * @param {Object.<string,any>} [options.context]
-   * @param {Console} [options.logger] define a logger, can be {logger: console} to send on the javascript console
-   * @param {string|(args: object, path: string, this:Component)=>{}} [options.html]
-   * @param {string} [options.css]
-   * @param {(args: object, path: string)=>{}} [options.onLoad] a hook for action on load of the component (do this or overload {Component.init} method)
-   * @param {(args: object, path: string)=>{}} [options.onPostLoad] a hook for action after load of the component (do this or overload {Component.postLoad} method)
-   * @param {()=>{}} [options.onBeforeClean] a hook for action on load of the component (do this or overload {Component.init} method)
-   * @param {()=>{}} [options.onAfterClean] a hook for action on load of the component (do this or overload {Component.init} method)
-   */
   constructor (options = {}) {
     this.id = (Math.random() * 0xFFFFFF << 0).toString(16).padStart(6, '0')
     this.name = options?.name || this.constructor.name
@@ -52,6 +54,9 @@ export default class Component {
     if (this.logger) this.logger.info(`${this.name}: created, id:${this.id}`)
   }
 
+  /**
+   * Listen events
+   */
   listen () {
     if (!this.listening) {
       this.listening = true
@@ -335,6 +340,11 @@ export default class Component {
   }
 }
 
+/**
+ * A component that host embedded Component
+ *
+ * @class HostComponent
+ */
 export class HostComponent extends Component {
   /**
    *

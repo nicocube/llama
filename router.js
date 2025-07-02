@@ -18,6 +18,9 @@ import Component from './component.js'
 const pathRx = /\/(?:(?::([0-9A-Za-z.+-]+))|([0-9A-Za-z.+-]+))/g
 const urlRx = /\/([0-9A-Za-z.+-]+)/g
 
+/**
+ * @private
+ */
 export class Param {
   constructor (name) {
     this.name = name
@@ -28,6 +31,9 @@ export class Param {
   }
 }
 
+/**
+ * @private
+ */
 export class Path {
   /**
    *
@@ -69,6 +75,9 @@ export class Path {
   }
 }
 
+/**
+ * @private
+ */
 export class Parsed {
   constructor (path, args) {
     this.path = path
@@ -80,18 +89,21 @@ export class Parsed {
   }
 }
 
+/**
+ * A simple router for Llama Component
+ *
+ * @class Router
+ *
+ * @param {EventBus} eventBus
+ * @param {object} [options]
+ * @param {Console} [options.logger] define a logger, can be {logger: console} to send on the javascript console
+ */
 export default class Router {
   static GO = 'router-go'
   static LAND = 'router-land'
   static NOT_FOUND = 'router-notfound'
   static ERROR = 'router-error'
 
-  /**
-   *
-   * @param {EventBus} eventBus
-   * @param {object} [options]
-   * @param {Console} [options.logger] define a logger, can be {logger: console} to send on the javascript console
-   */
   constructor (eventBus, options) {
     /**
      * @property {Path[]} routes
@@ -103,6 +115,10 @@ export default class Router {
     this.logger = options?.logger || undefined
   }
 
+  /**
+   *
+   * @param {function} action
+   */
   before (action) {
     this.before_action = action
   }
@@ -119,6 +135,9 @@ export default class Router {
     if (action instanceof Component) action.listen(path)
   }
 
+  /**
+   * Run the router
+   */
   run () {
     if (this.logger) this.logger.debug('router.run()')
     this._route = () => this.route()
@@ -131,15 +150,25 @@ export default class Router {
     }
   }
 
+  /**
+   * Stop the router
+   */
   stop () {
     window.removeEventListener('hashchange', this._route)
     window.removeEventListener('load', this._route)
   }
 
+  /**
+   * Go to a route matching the given path
+   * @param {string} path
+   */
   go (path) {
     window.location.hash = path
   }
 
+  /**
+   * Route the browser
+   */
   async route () {
     if (this.logger) this.logger.debug(`router.route(): ${window.location.hash}`)
     const path = (window.location.hash.at(0) === '#')
